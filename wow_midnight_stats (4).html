@@ -296,31 +296,31 @@ const CLASSES=[
 {name:"Paladin",icon:"Pa",color:"#F48CBA",bg:"#38101e",specs:[
   {name:"Holy",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Mastery: Lightbringer",
    trees:[
-    {name:"Herald of the Sun", stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"],equal:[["Critical Strike","Versatility"]]},
-    {name:"Lightsmith",        stats:["Intellect","Mastery","Critical Strike","Haste","Versatility"]}
+    {name:"Herald of the Sun", stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"],equal:[["Haste","Critical Strike"]]},
+    {name:"Lightsmith",        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"],equal:[["Haste","Critical Strike"]]}
    ],wh:"classes/paladin/holy/stat-priority-pve-healer"},
   {name:"Protection",role:"Tank",pri:"Strength",roles:["tank"],mastery:"Mastery: Divine Bulwark",
    trees:[
-    {name:"Herald of the Sun", stats:["Strength","Haste","Critical Strike","Versatility","Mastery"]},
-    {name:"Lightsmith",        stats:["Strength","Haste","Critical Strike","Versatility","Mastery"]}
+    {name:"Survivability", stats:["Strength","Haste","Versatility","Mastery","Critical Strike"]},
+    {name:"DPS",        stats:["Strength","Haste","Versatility","Critical Strike","Mastery"]}
    ],wh:"classes/paladin/protection/stat-priority-pve-tank"},
   {name:"Retribution",role:"DPS",pri:"Strength",roles:["dps"],mastery:"Mastery: Hand of Light",
    trees:[
-    {name:"Herald of the Sun", stats:["Strength","Mastery","Critical Strike","Haste","Versatility"]},
-    {name:"Templar",           stats:["Strength","Mastery","Critical Strike","Haste","Versatility"]}
+    {name:"Herald of the Sun", stats:["Strength","Mastery","Haste","Critical Strike","Versatility"]},
+    {name:"Templar",           stats:["Strength","Mastery","Haste","Critical Strike","Versatility"]}
    ],wh:"classes/paladin/retribution/stat-priority-pve-dps"}
 ]},
 
 {name:"Priest",icon:"Pr",color:"#EAEAEA",bg:"#202020",specs:[
   {name:"Discipline",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Mastery: Grace",
    trees:[
-    {name:"Voidweaver", stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"],equal:[["Critical Strike","Mastery"]]},
-    {name:"Oracle",     stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"],equal:[["Critical Strike","Mastery"]]}
+    {name:"Voidweaver", stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]},
+    {name:"Oracle",     stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]}
    ],wh:"classes/priest/discipline/stat-priority-pve-healer"},
   {name:"Holy",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Mastery: Echo of Light",
    trees:[
-    {name:"Archon",  stats:["Intellect","Mastery","Critical Strike","Versatility","Haste"]},
-    {name:"Oracle",  stats:["Intellect","Mastery","Critical Strike","Versatility","Haste"]}
+    {name:"Archon",  stats:["Intellect","Critical Strike","Versatility","Mastery","Haste"],equal:[["Versatility","Mastery"]]},
+    {name:"Oracle",  stats:["Intellect","Critical Strike","Versatility","Mastery","Haste"],equal:[["Versatility","Mastery"]]
    ],wh:"classes/priest/holy/stat-priority-pve-healer"},
   {name:"Shadow",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Mastery: Shadow Weaving",
    trees:[
@@ -332,36 +332,36 @@ const CLASSES=[
 {name:"Rogue",icon:"Ro",color:"#FFF468",bg:"#2a2800",specs:[
   {name:"Assassination",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Mastery: Potent Assassin",
    trees:[
-    {name:"Deathstalker", stats:["Agility","Mastery","Critical Strike","Haste","Versatility"]},
-    {name:"Fatebound",    stats:["Agility","Mastery","Critical Strike","Haste","Versatility"]}
+    {name:"Deathstalker", stats:["Agility","Critical Strike","Haste","Mastery","Versatility"]},
+    {name:"Fatebound",    stats:["Agility","Critical Strike","Haste","Mastery","Versatility"]}
    ],wh:"classes/rogue/assassination/stat-priority-pve-dps"},
   {name:"Outlaw",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Mastery: Main Gauche",
    trees:[
-    {name:"Fatebound",  stats:["Agility","Versatility","Critical Strike","Haste","Mastery"]},
-    {name:"Trickster",  stats:["Agility","Versatility","Critical Strike","Haste","Mastery"]}
+    {name:"Fatebound",  stats:["Agility","Haste","Critical Strike","Versatility","Mastery"]},
+    {name:"Trickster",  stats:["Agility","Haste","Critical Strike","Versatility","Mastery"]}
    ],wh:"classes/rogue/outlaw/stat-priority-pve-dps"},
   {name:"Subtlety",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Mastery: Executioner",
    trees:[
-    {name:"Deathstalker", stats:["Agility","Mastery","Critical Strike","Haste","Versatility"]},
-    {name:"Trickster",    stats:["Agility","Mastery","Critical Strike","Haste","Versatility"]}
+    {name:"Deathstalker", stats:["Agility","Mastery","Haste to 18%","Critical Strike","Versatility"]},
+    {name:"Trickster",    stats:["Agility","Mastery","Haste to 18%","Critical Strike","Versatility"]}
    ],wh:"classes/rogue/subtlety/stat-priority-pve-dps"}
 ]},
 
 {name:"Shaman",icon:"Sh",color:"#0070DD",bg:"#001530",specs:[
   {name:"Elemental",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Mastery: Elemental Overload",
    trees:[
-    {name:"Farseer",      stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]},
-    {name:"Stormbringer", stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]}
+    {name:"Farseer",      stats:["Intellect","Mastery to 1200","Haste","Critical Strike","Versatility"]},
+    {name:"Stormbringer", stats:["Intellect","Mastery to 1200","Haste","Critical Strike","Versatility"]}
    ],wh:"classes/shaman/elemental/stat-priority-pve-dps"},
   {name:"Enhancement",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Mastery: Enhanced Elements",
    trees:[
-    {name:"Farseer",  stats:["Agility","Haste","Mastery","Critical Strike","Versatility"]},
-    {name:"Totemic",  stats:["Agility","Haste","Mastery","Critical Strike","Versatility"]}
+    {name:"Stormbringer",  stats:["Agility","Haste","Mastery","Critical Strike","Versatility"]},
+    {name:"Totemic",  stats:["Agility","Mastery","Haste","Critical Strike","Versatility"]}
    ],wh:"classes/shaman/enhancement/stat-priority-pve-dps"},
   {name:"Restoration",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Mastery: Deep Healing",
    trees:[
-    {name:"Farseer",  stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"]},
-    {name:"Totemic",  stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"]}
+    {name:"Farseer",  stats:["Intellect","Critical Strike","Mastery","Versatility","Haste"],equal:[["Versatility","Mastery"],
+    {name:"Totemic",  stats:["Intellect","Critical Strike","Mastery","Versatility","Haste"],equal:[["Versatility","Mastery"]]
    ],wh:"classes/shaman/restoration/stat-priority-pve-healer"}
 ]},
 
@@ -373,13 +373,13 @@ const CLASSES=[
    ],wh:"classes/warlock/affliction/stat-priority-pve-dps"},
   {name:"Demonology",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Mastery: Master Demonologist",
    trees:[
-    {name:"Diabolist",      stats:["Intellect","Haste","Mastery","Versatility","Critical Strike"]},
-    {name:"Soul Harvester", stats:["Intellect","Haste","Mastery","Versatility","Critical Strike"]}
+    {name:"Diabolist",      stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]},
+    {name:"Soul Harvester", stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]}
    ],wh:"classes/warlock/demonology/stat-priority-pve-dps"},
   {name:"Destruction",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Mastery: Chaotic Energies",
    trees:[
-    {name:"Diabolist",  stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]},
-    {name:"Hellcaller", stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]}
+    {name:"Diabolist",  stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]},
+    {name:"Hellcaller", stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]}
    ],wh:"classes/warlock/destruction/stat-priority-pve-dps"}
 ]},
 
@@ -396,8 +396,8 @@ const CLASSES=[
    ],wh:"classes/warrior/fury/stat-priority-pve-dps"},
   {name:"Protection",role:"Tank",pri:"Strength",roles:["tank"],mastery:"Mastery: Critical Block",
    trees:[
-    {name:"Colossus",    stats:["Strength","Haste","Critical Strike","Versatility","Mastery"]},
-    {name:"Thunderlord", stats:["Strength","Haste","Critical Strike","Versatility","Mastery"]}
+    {name:"Survivability",    stats:["Strength","Haste","Critical Strike","Versatility","Mastery"]},
+    {name:"DPS", stats:["Strength","Haste","Critical Strike","Versatility","Mastery"]}
    ],wh:"classes/warrior/protection/stat-priority-pve-tank"}
 ]}
 
