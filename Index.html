@@ -74,11 +74,9 @@
         .sl2{font-size:11px;min-width:58px;color:var(--text2)}
         .sb{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06);overflow:hidden}
         .sf{height:100%;border-radius:2px}
-        .nb{font-size:8px;background:rgba(136,128,224,.25);color:#a09aee;padding:1px 5px;border-radius:4px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-left:4px;vertical-align:middle}
         .wl{display:inline-flex;align-items:center;gap:3px;font-size:9px;color:var(--text3);text-decoration:none;margin-top:8px;padding-top:6px;border-top:1px solid var(--border);transition:color .15s;width:100%}
         .wl:hover{color:var(--gold)}
         .footer{text-align:center;padding:40px 20px;font-size:11px;color:var(--text3);border-top:1px solid var(--border);margin-top:40px}
-        .footer a{color:var(--gold);text-decoration:none}
         .es{text-align:center;padding:60px 20px;color:var(--text3);font-size:14px;display:none}
         @media(max-width:520px){.sg{grid-template-columns:1fr}.site-header h1{font-size:18px}}
     </style>
@@ -101,13 +99,6 @@
             <button class="fbtn" data-f="dps">DPS</button>
             <button class="fbtn" data-f="tank">Tank</button>
             <button class="fbtn" data-f="heal">Healer</button>
-            <button class="fbtn" data-f="support">Support</button>
-        </div>
-        <div class="fsep"></div>
-        <div class="fg">
-            <button class="fbtn" data-f="str">Strength</button>
-            <button class="fbtn" data-f="agi">Agility</button>
-            <button class="fbtn" data-f="int">Intellect</button>
         </div>
     </div>
 
@@ -124,7 +115,7 @@
 </div>
 
 <footer class="footer">
-    World of Warcraft: Midnight · Dashboard v1.0.4<br>
+    World of Warcraft: Midnight · Dashboard v1.0.5<br>
     Built for Github Pages & Local Execution
 </footer>
 
@@ -140,9 +131,10 @@ const C={
 };
 const RP=["#d86040","#e09c38","#38b87a","#3d8fd6","#8880e0"];
 const PC={"Strength":"pstr","Agility":"pagi","Intellect":"pint"};
-const RL={dps:"DPS",tank:"Tank",heal:"Healer",support:"Support"};
-const RC={dps:"tdps",tank:"ttank",heal:"theal",support:"tsupp"};
+const RL={dps:"DPS",tank:"Tank",heal:"Healer"};
+const RC={dps:"tdps",tank:"ttank",heal:"theal"};
 
+// Class Data (Priest/Shaman fixes included)
 const CLASSES=[
 {name:"Death Knight",icon:"DK",color:"#C41E3A",bg:"#3a0a10",specs:[
     {name:"Blood",role:"Tank",pri:"Strength",roles:["tank"],mastery:"Mastery: Blood Shield",
@@ -237,7 +229,7 @@ function buildTree(t){
 }
 
 function buildSpec(sp){
-    return `<div class="sc" data-roles='${JSON.stringify(sp.roles)}' data-pri='${sp.pri.toLowerCase().slice(0,3)}'>
+    return `<div class="sc" data-roles='${JSON.stringify(sp.roles)}'>
         <div class="sh"><div class="sn">${sp.name}</div><span class="rt srb ${RC[sp.roles[0]]}">${RL[sp.roles[0]]}</span></div>
         <div class="mn">${sp.mastery}</div>
         <span class="pb ${PC[sp.pri]}">${sp.pri}</span>
@@ -271,8 +263,8 @@ document.getElementById("filters").addEventListener("click",function(e){
     document.querySelectorAll(".cb").forEach(bl=>{
         let v=0;
         bl.querySelectorAll(".sc").forEach(c=>{
-            const r=JSON.parse(c.getAttribute("data-roles")), p=c.getAttribute("data-pri");
-            const m=(af==="all")||(af==="dps"&&r.includes("dps"))||(af==="tank"&&r.includes("tank"))||(af==="heal"&&r.includes("heal"))||(af==="str"&&p==="str")||(af==="agi"&&p==="agi")||(af==="int"&&p==="int");
+            const r=JSON.parse(c.getAttribute("data-roles"));
+            const m=(af==="all")||(af==="dps"&&r.includes("dps"))||(af==="tank"&&r.includes("tank"))||(af==="heal"&&r.includes("heal"));
             c.style.display=m?"":"none";
             if(m)v++;
         });
