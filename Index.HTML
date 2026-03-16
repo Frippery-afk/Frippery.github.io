@@ -14,7 +14,6 @@
         --text-dim: #9499a6;
         --border: rgba(255, 255, 255, 0.08);
         --glass: rgba(255, 255, 255, 0.03);
-        
         --crit: #ff5f5f; --haste: #ffb347; --mastery: #4ade80; --vers: #60a5fa;
         --str: #f87171; --agi: #a3e635; --int: #818cf8;
     }
@@ -28,7 +27,6 @@
         padding-bottom: 80px;
     }
 
-    /* Header & Centered Filters */
     .site-header {
         padding: 40px 20px;
         text-align: center;
@@ -74,7 +72,6 @@
     .fbtn:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
     .fbtn.active { background: var(--accent); color: #000; }
 
-    /* Legend */
     .legend {
         display: flex;
         justify-content: center;
@@ -87,11 +84,9 @@
     .li { display: flex; align-items: center; gap: 6px; }
     .ld { width: 8px; height: 8px; border-radius: 50%; }
 
-    /* Main Grid */
     .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
     .cg { display: flex; flex-direction: column; gap: 16px; }
 
-    /* Class Card */
     .cb {
         background: var(--card-bg);
         border: 1px solid var(--border);
@@ -117,10 +112,9 @@
 
     .cn { font-size: 18px; font-weight: 700; flex-grow: 1; }
 
-    /* Specs Grid - The "Limited Background" Fix */
     .sg {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 12px;
         padding: 20px;
         background: rgba(0,0,0,0.2);
@@ -128,7 +122,6 @@
 
     .collapsed .sg { display: none; }
 
-    /* Spec Box */
     .sc {
         background: var(--inner-bg);
         border: 1px solid var(--border);
@@ -142,7 +135,6 @@
     .sh { display: flex; justify-content: space-between; align-items: center; }
     .sn { font-weight: 700; font-size: 15px; }
 
-    /* Stat Bars */
     .ht {
         background: rgba(0,0,0,0.2);
         border-radius: 8px;
@@ -152,11 +144,10 @@
     .htn { font-size: 11px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; opacity: 0.8; }
     
     .sr { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-    .sl2 { font-size: 11px; width: 70px; color: var(--text-dim); }
+    .sl2 { font-size: 11px; width: 85px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
     .sb { flex-grow: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
     .sf { height: 100%; border-radius: 3px; }
 
-    /* Badges */
     .rt { font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 700; text-transform: uppercase; }
     .tdps { color: var(--crit); background: rgba(255,95,95,0.1); }
     .ttank { color: var(--vers); background: rgba(96,165,250,0.1); }
@@ -175,14 +166,13 @@
     
     @media (max-width: 600px) {
         .sg { grid-template-columns: 1fr; }
-        .filter-group { flex-wrap: wrap; justify-content: center; }
     }
 </style>
 </head>
 <body>
 
 <header class="site-header">
-    <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 10px;">Season 1 Reference</div>
+    <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 10px;">World of Warcraft</div>
     <h1>Midnight <span>Stats</span></h1>
     <div class="controls-container">
         <div class="filter-group" id="filters">
@@ -204,61 +194,173 @@
 <div class="container">
     <div class="rbar" id="rbar" style="text-align: center; font-size: 13px; color: var(--text-dim); margin-bottom: 20px;"></div>
     <div class="cg" id="classes"></div>
-    <div id="es" style="text-align:center; padding: 40px; color: var(--text-dim); display:none;">No specs found for this filter.</div>
+    <div id="es" style="text-align:center; padding: 40px; color: var(--text-dim); display:none;">No specs match this filter.</div>
 </div>
 
 <footer class="footer">
-    World of Warcraft: Midnight · Patch 12.0.1<br>
+    World of Warcraft: Midnight · Dashboard v1.1.0<br>
     Data from Wowhead, Method, and Icy Veins
 </footer>
 
 <script>
 const C = {
-    "Critical Strike": {c:"var(--crit)", s:"Crit"},
-    "Haste": {c:"var(--haste)", s:"Haste"},
-    "Mastery": {c:"var(--mastery)", s:"Mast"},
-    "Versatility": {c:"var(--vers)", s:"Vers"},
-    "Strength": {c:"var(--str)", s:"Str"},
-    "Agility": {c:"var(--agi)", s:"Agi"},
-    "Intellect": {c:"var(--int)", s:"Int"}
+    "Critical Strike": {c:"var(--crit)", s:"Crit"}, "Haste": {c:"var(--haste)", s:"Haste"},
+    "Mastery": {c:"var(--mastery)", s:"Mast"}, "Versatility": {c:"var(--vers)", s:"Vers"},
+    "Strength": {c:"var(--str)", s:"Str"}, "Agility": {c:"var(--agi)", s:"Agi"}, "Intellect": {c:"var(--int)", s:"Int"},
+    "Mastery to 1200": {c:"var(--mastery)", s:"Mast(1200)"}, "Haste to 18%": {c:"var(--haste)", s:"Haste(18%)"}
 };
 
 const CLASSES = [
-    {name:"Death Knight", icon:"DK", color:"#C41E3A", bg:"#3a0a10", specs:[
-        {name:"Blood", role:"Tank", pri:"Strength", roles:["tank"], mastery:"Blood Shield", trees:[
-            {name:"San'layn", stats:["Strength","Haste","Mastery","Critical Strike","Versatility"], equal:[["Mastery","Critical Strike","Versatility"]]},
-            {name:"Deathbringer", stats:["Strength","Critical Strike","Mastery","Versatility","Haste"], equal:[["Mastery","Versatility"]]}
-        ], wh:"blood-dk"},
-        {name:"Frost", role:"DPS", pri:"Strength", roles:["dps"], mastery:"Frozen Heart", trees:[
-            {name:"Deathbringer", stats:["Strength","Critical Strike","Mastery","Haste","Versatility"]},
-            {name:"Rider", stats:["Strength","Critical Strike","Mastery","Haste","Versatility"]}
-        ], wh:"frost-dk"}
-    ]},
-    {name:"Demon Hunter", icon:"DH", color:"#A330C9", bg:"#2a0a38", specs:[
-        {name:"Havoc", role:"DPS", pri:"Agility", roles:["dps"], mastery:"Demonic Presence", trees:[
-            {name:"Fel-Scarred", stats:["Agility","Critical Strike","Mastery","Haste","Versatility"]}
-        ], wh:"havoc-dh"},
-        {name:"Vengeance", role:"Tank", pri:"Agility", roles:["tank"], mastery:"Fel Blood", trees:[
-            {name:"Annihilator", stats:["Agility","Haste","Critical Strike","Versatility","Mastery"]}
-        ], wh:"vengeance-dh"}
-    ]},
-    {name:"Paladin", icon:"Pa", color:"#F48CBA", bg:"#38101e", specs:[
-        {name:"Retribution", role:"DPS", pri:"Strength", roles:["dps"], mastery:"Hand of Light", trees:[
-            {name:"Templar", stats:["Strength","Mastery","Haste","Critical Strike","Versatility"]}
-        ], wh:"retribution-paladin"}
-    ]},
-    {name:"Priest", icon:"Pr", color:"#EAEAEA", bg:"#202020", specs:[
-        {name:"Holy", role:"Healer", pri:"Intellect", roles:["heal"], mastery:"Echo of Light", trees:[
-            {name:"Archon", stats:["Intellect","Critical Strike","Versatility","Mastery","Haste"], equal:[["Versatility","Mastery"]]},
-            {name:"Oracle", stats:["Intellect","Critical Strike","Versatility","Mastery","Haste"], equal:[["Versatility","Mastery"]]}
-        ], wh:"holy-priest"}
-    ]},
-    {name:"Shaman", icon:"Sh", color:"#0070DD", bg:"#001530", specs:[
-        {name:"Restoration", role:"Healer", pri:"Intellect", roles:["heal"], mastery:"Deep Healing", trees:[
-            {name:"Farseer", stats:["Intellect","Critical Strike","Mastery","Versatility","Haste"], equal:[["Versatility","Mastery"]]},
-            {name:"Totemic", stats:["Intellect","Critical Strike","Mastery","Versatility","Haste"], equal:[["Versatility","Mastery"]]}
-        ], wh:"restoration-shaman"}
-    ]}
+{name:"Death Knight",icon:"DK",color:"#C41E3A",bg:"#3a0a10",specs:[
+    {name:"Blood",role:"Tank",pri:"Strength",roles:["tank"],mastery:"Blood Shield",trees:[
+        {name:"San'layn", stats:["Strength","Haste","Mastery","Critical Strike","Versatility"],equal:[["Mastery","Critical Strike","Versatility"]]},
+        {name:"Deathbringer", stats:["Strength","Critical Strike","Mastery","Versatility","Haste"],equal:[["Mastery","Versatility"]]}
+    ],wh:"death-knight/blood"},
+    {name:"Frost",role:"DPS",pri:"Strength",roles:["dps"],mastery:"Frozen Heart",trees:[
+        {name:"Deathbringer", stats:["Strength","Critical Strike","Mastery","Haste","Versatility"]},
+        {name:"Rider", stats:["Strength","Critical Strike","Mastery","Haste","Versatility"]}
+    ],wh:"death-knight/frost"},
+    {name:"Unholy",role:"DPS",pri:"Strength",roles:["dps"],mastery:"Dreadblade",trees:[
+        {name:"San'layn", stats:["Strength","Mastery","Critical Strike","Haste","Versatility"]}
+    ],wh:"death-knight/unholy"}
+]},
+{name:"Demon Hunter",icon:"DH",color:"#A330C9",bg:"#2a0a38",specs:[
+    {name:"Havoc",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Demonic Presence",trees:[
+        {name:"Fel-Scarred", stats:["Agility","Critical Strike","Mastery","Haste","Versatility"]}
+    ],wh:"demon-hunter/havoc"},
+    {name:"Vengeance",role:"Tank",pri:"Agility",roles:["tank"],mastery:"Fel Blood",trees:[
+        {name:"Aldrachi", stats:["Agility","Haste","Critical Strike","Versatility","Mastery"]}
+    ],wh:"demon-hunter/vengeance"},
+    {name:"Devourer",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Monster Within",trees:[
+        {name:"Annihilator", stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]}
+    ],wh:"demon-hunter/devourer"}
+]},
+{name:"Druid",icon:"Dr",color:"#FF7C0A",bg:"#3a1e00",specs:[
+    {name:"Balance",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Starlight",trees:[
+        {name:"Keeper", stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]}
+    ],wh:"druid/balance"},
+    {name:"Feral",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Razor Claws",trees:[
+        {name:"Wildstalker", stats:["Agility","Mastery","Critical Strike","Haste","Versatility"]}
+    ],wh:"druid/feral"},
+    {name:"Guardian",role:"Tank",pri:"Agility",roles:["tank"],mastery:"Nature's Guardian",trees:[
+        {name:"Survivability", stats:["Agility","Haste","Versatility","Critical Strike","Mastery"]}
+    ],wh:"druid/guardian"},
+    {name:"Resto",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Harmony",trees:[
+        {name:"Wildstalker", stats:["Intellect","Haste","Mastery","Versatility","Critical Strike"]}
+    ],wh:"druid/restoration"}
+]},
+{name:"Evoker",icon:"Ev",color:"#33937F",bg:"#082820",specs:[
+    {name:"Devastation",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Giantkiller",trees:[
+        {name:"Scalecommander", stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"]}
+    ],wh:"evoker/devastation"},
+    {name:"Preservation",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Life-Binder",trees:[
+        {name:"Chronowarden", stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]}
+    ],wh:"evoker/preservation"},
+    {name:"Augmentation",role:"Support",pri:"Intellect",roles:["support","dps"],mastery:"Timewalker",trees:[
+        {name:"Chronowarden", stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"]}
+    ],wh:"evoker/augmentation"}
+]},
+{name:"Hunter",icon:"Hu",color:"#AAD372",bg:"#1a2e08",specs:[
+    {name:"Beast Mastery",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Master of Beasts",trees:[
+        {name:"Pack Leader", stats:["Agility","Mastery","Haste","Critical Strike","Versatility"]}
+    ],wh:"hunter/beast-mastery"},
+    {name:"Marksmanship",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Sniper Training",trees:[
+        {name:"Sentinel", stats:["Agility","Critical Strike","Mastery","Versatility","Haste"]}
+    ],wh:"hunter/marksmanship"},
+    {name:"Survival",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Spirit Bond",trees:[
+        {name:"Sentinel", stats:["Agility","Mastery","Critical Strike","Haste","Versatility"]}
+    ],wh:"hunter/survival"}
+]},
+{name:"Mage",icon:"Ma",color:"#3FC7EB",bg:"#051e2a",specs:[
+    {name:"Arcane",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Savant",trees:[
+        {name:"Sunfury", stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]}
+    ],wh:"mage/arcane"},
+    {name:"Fire",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Ignite",trees:[
+        {name:"Frostfire", stats:["Intellect","Haste","Mastery","Versatility","Critical Strike"]}
+    ],wh:"mage/fire"},
+    {name:"Frost",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Freeze & Shatter",trees:[
+        {name:"Spellslinger", stats:["Intellect","Mastery","Critical Strike","Haste","Versatility"]}
+    ],wh:"mage/frost"}
+]},
+{name:"Monk",icon:"Mo",color:"#00FF98",bg:"#002e18",specs:[
+    {name:"Brewmaster",role:"Tank",pri:"Agility",roles:["tank"],mastery:"Elusive Brawler",trees:[
+        {name:"Shado-Pan", stats:["Agility","Versatility","Critical Strike","Mastery","Haste"]}
+    ],wh:"monk/brewmaster"},
+    {name:"Mistweaver",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Gust of Mists",trees:[
+        {name:"Raid", stats:["Intellect","Haste","Critical Strike","Versatility","Mastery"]}
+    ],wh:"monk/mistweaver"},
+    {name:"Windwalker",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Combo Strikes",trees:[
+        {name:"Conduit", stats:["Agility","Haste","Mastery","Critical Strike","Versatility"]}
+    ],wh:"monk/windwalker"}
+]},
+{name:"Paladin",icon:"Pa",color:"#F48CBA",bg:"#38101e",specs:[
+    {name:"Holy",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Lightbringer",trees:[
+        {name:"Herald", stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]}
+    ],wh:"paladin/holy"},
+    {name:"Protection",role:"Tank",pri:"Strength",roles:["tank"],mastery:"Divine Bulwark",trees:[
+        {name:"Survivability", stats:["Strength","Haste","Versatility","Mastery","Critical Strike"]}
+    ],wh:"paladin/protection"},
+    {name:"Retribution",role:"DPS",pri:"Strength",roles:["dps"],mastery:"Hand of Light",trees:[
+        {name:"Templar", stats:["Strength","Mastery","Haste","Critical Strike","Versatility"]}
+    ],wh:"paladin/retribution"}
+]},
+{name:"Priest",icon:"Pr",color:"#EAEAEA",bg:"#202020",specs:[
+    {name:"Discipline",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Grace",trees:[
+        {name:"Voidweaver", stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]}
+    ],wh:"priest/discipline"},
+    {name:"Holy",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Echo of Light",trees:[
+        {name:"Archon", stats:["Intellect","Critical Strike","Versatility","Mastery","Haste"], equal:[["Versatility","Mastery"]]},
+        {name:"Oracle", stats:["Intellect","Critical Strike","Versatility","Mastery","Haste"], equal:[["Versatility","Mastery"]]}
+    ],wh:"priest/holy"},
+    {name:"Shadow",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Shadow Weaving",trees:[
+        {name:"Voidweaver", stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]}
+    ],wh:"priest/shadow"}
+]},
+{name:"Rogue",icon:"Ro",color:"#FFF468",bg:"#2a2800",specs:[
+    {name:"Assassination",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Potent Assassin",trees:[
+        {name:"Deathstalker", stats:["Agility","Critical Strike","Haste","Mastery","Versatility"]}
+    ],wh:"rogue/assassination"},
+    {name:"Outlaw",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Main Gauche",trees:[
+        {name:"Fatebound", stats:["Agility","Haste","Critical Strike","Versatility","Mastery"]}
+    ],wh:"rogue/outlaw"},
+    {name:"Subtlety",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Executioner",trees:[
+        {name:"Trickster", stats:["Agility","Mastery","Haste to 18%","Critical Strike","Versatility"]}
+    ],wh:"rogue/subtlety"}
+]},
+{name:"Shaman",icon:"Sh",color:"#0070DD",bg:"#001530",specs:[
+    {name:"Elemental",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Elemental Overload",trees:[
+        {name:"Stormbringer", stats:["Intellect","Mastery to 1200","Haste","Critical Strike","Versatility"]}
+    ],wh:"shaman/elemental"},
+    {name:"Enhancement",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Enhanced Elements",trees:[
+        {name:"Totemic", stats:["Agility","Mastery","Haste","Critical Strike","Versatility"]}
+    ],wh:"shaman/enhancement"},
+    {name:"Resto",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Deep Healing",trees:[
+        {name:"Farseer", stats:["Intellect","Critical Strike","Mastery","Versatility","Haste"], equal:[["Versatility","Mastery"]]},
+        {name:"Totemic", stats:["Intellect","Critical Strike","Mastery","Versatility","Haste"], equal:[["Versatility","Mastery"]]}
+    ],wh:"shaman/restoration"}
+]},
+{name:"Warlock",icon:"Wl",color:"#8788EE",bg:"#0d0d2e",specs:[
+    {name:"Affliction",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Potent Afflictions",trees:[
+        {name:"Soul Harvester", stats:["Intellect","Mastery","Critical Strike","Haste","Versatility"]}
+    ],wh:"warlock/affliction"},
+    {name:"Demonology",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Master Demonologist",trees:[
+        {name:"Diabolist", stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]}
+    ],wh:"warlock/demonology"},
+    {name:"Destruction",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Chaotic Energies",trees:[
+        {name:"Hellcaller", stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]}
+    ],wh:"warlock/destruction"}
+]},
+{name:"Warrior",icon:"Wa",color:"#C69B3A",bg:"#2a1e00",specs:[
+    {name:"Arms",role:"DPS",pri:"Strength",roles:["dps"],mastery:"Deep Wounds",trees:[
+        {name:"Colossus", stats:["Strength","Critical Strike","Haste","Mastery","Versatility"]}
+    ],wh:"warrior/arms"},
+    {name:"Fury",role:"DPS",pri:"Strength",roles:["dps"],mastery:"Unshackled Fury",trees:[
+        {name:"Slayer", stats:["Strength","Haste","Mastery","Critical Strike","Versatility"]}
+    ],wh:"warrior/fury"},
+    {name:"Protection",role:"Tank",pri:"Strength",roles:["tank"],mastery:"Critical Block",trees:[
+        {name:"Survivability", stats:["Strength","Haste","Critical Strike","Versatility","Mastery"]}
+    ],wh:"warrior/protection"}
+]}
 ];
 
 function buildStatRows(stats, equal) {
@@ -266,45 +368,20 @@ function buildStatRows(stats, equal) {
     const eq = equal || [];
     const done = new Set();
     let html = "";
-    
     sec.forEach((s, i) => {
         if (done.has(s)) return;
         let grp = eq.find(g => g.includes(s));
-        const pct = 100 - (i * 20);
-        
+        const pct = 100 - (i * 18);
         if (grp) {
             const label = grp.map(x => C[x]?.s || x).join("=");
-            html += `<div class="sr"><span class="sl2">${label}</span><div class="sb"><div class="sf" style="width:${pct}%; background:${C[grp[0]].c}"></div></div></div>`;
+            html += `<div class="sr"><span class="sl2">${label}</span><div class="sb"><div class="sf" style="width:${pct}%; background:${C[grp[0]]?.c || '#888'}"></div></div></div>`;
             grp.forEach(x => done.add(x));
         } else {
-            html += `<div class="sr"><span class="sl2">${C[s]?.s || s}</span><div class="sb"><div class="sf" style="width:${pct}%; background:${C[s].c}"></div></div></div>`;
+            html += `<div class="sr"><span class="sl2">${C[s]?.s || s}</span><div class="sb"><div class="sf" style="width:${pct}%; background:${C[s]?.c || '#888'}"></div></div></div>`;
             done.add(s);
         }
     });
     return html;
-}
-
-function buildSpec(sp) {
-    const roleClass = sp.roles[0] === 'dps' ? 'tdps' : sp.roles[0] === 'tank' ? 'ttank' : 'theal';
-    const priClass = sp.pri === 'Strength' ? 'pstr' : sp.pri === 'Agility' ? 'pagi' : 'pint';
-    
-    return `
-    <div class="sc" data-role="${sp.roles[0]}">
-        <div class="sh">
-            <span class="sn">${sp.name}</span>
-            <span class="rt ${roleClass}">${sp.role}</span>
-        </div>
-        <div class="pb ${priClass}">${sp.pri}</div>
-        <div class="hts">
-            ${sp.trees.map(t => `
-                <div class="ht">
-                    <div class="htn">${t.name}</div>
-                    ${buildStatRows(t.stats, t.equal)}
-                </div>
-            `).join('')}
-        </div>
-        <a href="#" class="wl">Wowhead Guide ↗</a>
-    </div>`;
 }
 
 function render() {
@@ -317,7 +394,17 @@ function render() {
                 <span style="font-size: 12px; color: var(--text-dim);">▾</span>
             </div>
             <div class="sg">
-                ${cl.specs.map(buildSpec).join('')}
+                ${cl.specs.map(sp => {
+                    const rC = sp.roles.includes('dps') ? 'tdps' : sp.roles.includes('tank') ? 'ttank' : 'theal';
+                    const pC = sp.pri === 'Strength' ? 'pstr' : sp.pri === 'Agility' ? 'pagi' : 'pint';
+                    return `
+                    <div class="sc" data-role="${sp.roles[0]}">
+                        <div class="sh"><span class="sn">${sp.name}</span><span class="rt ${rC}">${sp.role}</span></div>
+                        <div class="pb ${pC}">${sp.pri}</div>
+                        <div class="hts">${sp.trees.map(t => `<div class="ht"><div class="htn">${t.name}</div>${buildStatRows(t.stats, t.equal)}</div>`).join('')}</div>
+                        <a href="https://wowhead.com/guide/classes/${sp.wh}/stat-priority" target="_blank" class="wl">Guide ↗</a>
+                    </div>`;
+                }).join('')}
             </div>
         </div>
     `).join('');
@@ -326,16 +413,14 @@ function render() {
 
 function updateCount() {
     const vis = document.querySelectorAll('.sc:not([style*="display: none"])').length;
-    document.getElementById('rbar').innerText = `Showing ${vis} Specializations`;
+    document.getElementById('rbar').innerText = `Showing ${vis} of 40 Specializations`;
 }
 
 document.getElementById("filters").addEventListener("click", (e) => {
     const btn = e.target.closest(".fbtn");
     if (!btn) return;
-    
     document.querySelectorAll(".fbtn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    
     const filter = btn.dataset.f;
     document.querySelectorAll(".cb").forEach(card => {
         let hasVisibleSpec = false;
