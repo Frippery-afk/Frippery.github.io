@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WoW Midnight — Stat Priorities</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0e13;--bg2:#12151c;--bg3:#181c26;--bg4:#1e2230;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--border3:rgba(255,255,255,0.22);
+  --text:#ddd9cf;--text2:#9c9890;--text3:#5c5a55;--text4:#3e3d3a;
+  --gold:#c8a94a;--gold2:#e8c96a;--gold3:rgba(200,169,74,0.15);
+  --crit:#e05252;--haste:#e09c38;--mastery:#38b87a;--vers:#3d8fd6;
+  --str:#d86040;--agi:#68b830;--intel:#8880e0;
+  --font-display:'Georgia',serif;--font-body:'Trebuchet MS','Segoe UI',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.5;min-height:100vh}
+
+/* ── HEADER ── */
+.site-header{
+  background:linear-gradient(180deg,#080a0f 0%,var(--bg) 100%);
+  border-bottom:1px solid var(--border2);
+  padding:32px 20px 24px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.site-header::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 50% at 50% -5%,rgba(200,169,74,0.14) 0%,transparent 65%);
+  pointer-events:none;
+}
+.header-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;position:relative}
+.site-header h1{font-family:var(--font-display);font-size:clamp(20px,4.5vw,34px);font-weight:700;color:var(--gold);letter-spacing:1px;position:relative}
+.site-header h1 span{color:var(--text2);font-weight:400}
+.header-sub{font-size:12px;color:var(--text3);margin-top:6px;letter-spacing:.4px;position:relative}
+.header-rule{display:flex;align-items:center;gap:12px;justify-content:center;margin-top:14px;position:relative}
+.header-rule i{width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.header-rule i:last-child{transform:scaleX(-1)}
+.header-rule em{font-style:normal;font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase}
+.patch-badge{display:inline-flex;align-items:center;gap:5px;background:var(--gold3);border:1px solid rgba(200,169,74,0.3);color:var(--gold);font-size:10px;padding:3px 9px;border-radius:20px;margin-top:10px;position:relative;letter-spacing:.3px}
+
+/* ── CONTAINER ── */
+.container{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+
+/* ── SEARCH & FILTERS ── */
+.controls{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.search-wrap{position:relative}
+.search-wrap input{
+  width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;
+  color:var(--text);font-family:var(--font-body);font-size:13px;padding:9px 14px 9px 36px;
+  outline:none;transition:border-color .15s;
+}
+.search-wrap input:focus{border-color:var(--gold)}
+.search-wrap input::placeholder{color:var(--text3)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px}
+.filter-row{display:flex;flex-wrap:wrap;gap:5px}
+.filter-group{display:flex;gap:5px;flex-wrap:wrap}
+.filter-sep{width:1px;background:var(--border);margin:0 3px;align-self:stretch}
+.filter-btn{
+  font-size:11px;font-family:var(--font-body);padding:5px 12px;border-radius:20px;
+  border:1px solid var(--border2);background:var(--bg2);color:var(--text2);
+  cursor:pointer;transition:all .15s;letter-spacing:.2px;white-space:nowrap;
+}
+.filter-btn:hover{border-color:var(--gold);color:var(--gold)}
+.filter-btn.active{background:var(--gold);color:#0c0e13;border-color:var(--gold);font-weight:700}
+
+/* ── LEGEND ── */
+.legend{
+  display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:center;
+  padding:10px 16px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;margin-bottom:16px;
+}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* ── RESULTS COUNT ── */
+.results-bar{font-size:11px;color:var(--text3);text-align:right;margin-bottom:10px}
+
+/* ── CLASS BLOCKS ── */
+.classes-grid{display:flex;flex-direction:column;gap:8px}
+.class-block{
+  border:1px solid var(--border);border-radius:10px;overflow:hidden;
+  background:var(--bg2);transition:border-color .2s;
+}
+.class-block:hover{border-color:var(--border2)}
+.class-block.hidden{display:none}
+.class-header{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  cursor:pointer;user-select:none;transition:background .15s;
+}
+.class-header:hover{background:rgba(255,255,255,0.02)}
+.class-icon{
+  width:36px;height:36px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:700;font-family:var(--font-display);
+  flex-shrink:0;letter-spacing:0;border:1px solid rgba(255,255,255,0.1);
+}
+.class-name{font-size:14px;font-weight:600;font-family:var(--font-display);color:var(--text);letter-spacing:.3px}
+.class-meta{font-size:10px;color:var(--text3);margin-left:4px;letter-spacing:.2px}
+.class-tags{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.role-tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;letter-spacing:.2px}
+.tag-dps{background:rgba(224,82,82,.13);color:#e05252;border:1px solid rgba(224,82,82,.22)}
+.tag-tank{background:rgba(61,143,214,.13);color:#3d8fd6;border:1px solid rgba(61,143,214,.22)}
+.tag-heal{background:rgba(56,184,122,.13);color:#38b87a;border:1px solid rgba(56,184,122,.22)}
+.tag-support{background:rgba(136,128,224,.13);color:#8880e0;border:1px solid rgba(136,128,224,.22)}
+.chevron{font-size:10px;color:var(--text3);transition:transform .2s;margin-left:8px;flex-shrink:0}
+.collapsed .chevron{transform:rotate(-90deg)}
+.collapsed .specs-grid{display:none}
+
+/* ── SPECS GRID ── */
+.specs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;padding:0 10px 12px}
+
+/* ── SPEC CARDS ── */
+.spec-card{
+  border:1px solid var(--border);border-radius:8px;padding:12px 13px;
+  background:var(--bg3);transition:border-color .15s, transform .1s;position:relative;
+}
+.spec-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.spec-card.hidden{display:none}
+.spec-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px}
+.spec-name{font-size:12px;font-weight:600;font-family:var(--font-display);color:var(--text)}
+.spec-role-badge{font-size:9px;padding:1px 6px;border-radius:8px;margin-top:1px;flex-shrink:0}
+.spec-mastery-name{font-size:9.5px;color:var(--text3);margin-bottom:8px;font-style:italic}
+.primary-badge{
+  font-size:9px;padding:2px 8px;border-radius:6px;margin-bottom:9px;
+  display:inline-block;font-weight:600;letter-spacing:.3px;text-transform:uppercase;
+}
+.p-str{background:rgba(216,96,64,.18);color:#e8825a;border:1px solid rgba(216,96,64,.28)}
+.p-agi{background:rgba(104,184,48,.18);color:#8ad450;border:1px solid rgba(104,184,48,.28)}
+.p-int{background:rgba(136,128,224,.18);color:#a09aee;border:1px solid rgba(136,128,224,.28)}
+
+/* ── STAT ROWS ── */
+.stat-list{display:flex;flex-direction:column;gap:4px}
+.stat-row{display:flex;align-items:center;gap:6px}
+.stat-rank{
+  width:18px;height:18px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;
+}
+.stat-label{font-size:11px;min-width:60px;color:var(--text2)}
+.stat-bar{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06);overflow:hidden}
+.stat-fill{height:100%;border-radius:2px;transition:width .4s ease}
+.stat-equal{font-size:9px;color:var(--text3);margin-left:1px;align-self:center}
+
+/* ── DETAIL NOTES ── */
+.spec-notes{margin-top:9px;padding-top:8px;border-top:1px solid var(--border)}
+.note-item{
+  font-size:10px;line-height:1.5;color:var(--text3);padding:3px 0;
+  display:flex;gap:5px;align-items:flex-start;
+}
+.note-item::before{content:'›';color:var(--gold);flex-shrink:0;margin-top:1px;font-size:11px}
+.note-ht{font-size:9px;color:var(--text3);padding:2px 5px;background:rgba(200,169,74,0.08);
+  border:1px solid rgba(200,169,74,0.15);border-radius:4px;display:inline-block;margin-bottom:4px;font-style:italic}
+
+/* ── WOWHEAD LINK ── */
+.wh-link{
+  display:inline-flex;align-items:center;gap:3px;font-size:9px;color:var(--text3);
+  text-decoration:none;margin-top:8px;padding-top:7px;border-top:1px solid var(--border);
+  transition:color .15s;width:100%;
+}
+.wh-link:hover{color:var(--gold)}
+.wh-link::before{content:'↗';font-size:10px}
+
+/* ── NEW BADGE ── */
+.new-badge{
+  font-size:8px;background:rgba(136,128,224,.25);color:#a09aee;
+  padding:1px 5px;border-radius:4px;font-weight:700;font-family:var(--font-body);
+  letter-spacing:.4px;text-transform:uppercase;margin-left:4px;vertical-align:middle;
+}
+
+/* ── FOOTER ── */
+.site-footer{
+  text-align:center;padding:24px 20px;font-size:11px;color:var(--text3);
+  border-top:1px solid var(--border);margin-top:10px;line-height:1.8;
+}
+.site-footer a{color:var(--gold);text-decoration:none}
+.site-footer a:hover{text-decoration:underline}
+.disclaimer{max-width:600px;margin:8px auto 0;font-size:10px;color:var(--text4);line-height:1.6}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3);font-size:14px}
+
+@media(max-width:520px){
+  .specs-grid{grid-template-columns:1fr 1fr}
+  .site-header h1{font-size:18px}
+  .filter-sep{display:none}
+}
+@media(max-width:360px){
+  .specs-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-eyebrow">World of Warcraft</div>
+  <h1>Midnight <span>— Stat Priorities</span></h1>
+  <p class="header-sub">All 13 classes · 39 specializations · Complete secondary stat reference</p>
+  <div class="header-rule"><i></i><em>wowhead.com</em><i></i></div>
+  <div style="margin-top:10px;position:relative">
+    <span class="patch-badge">⚔ Patch 12.0.1 · Updated March 2026</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search class or spec…" autocomplete="off">
+    </div>
+    <div class="filter-row">
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="all">All</button>
+      </div>
+      <div class="filter-sep"></div>
+      <div class="filter-group">
+        <button class="filter-btn" data-filter="dps">DPS</button>
+        <button class="filter-btn" data-filter="tank">Tank</button>
+        <button class="filter-btn" data-filter="heal">Healer</button>
+        <button class="filter-btn" data-filter="support">Support</button>
+      </div>
+      <div class="filter-sep"></div>
+      <div class="filter-group">
+        <button class="filter-btn" data-filter="str">Strength</button>
+        <button class="filter-btn" data-filter="agi">Agility</button>
+        <button class="filter-btn" data-filter="int">Intellect</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--crit)"></div>Critical Strike</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--haste)"></div>Haste</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--mastery)"></div>Mastery</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--vers)"></div>Versatility</div>
+    <div class="legend-item" style="border-left:1px solid var(--border);padding-left:14px"><div class="legend-dot" style="background:var(--str)"></div>Strength primary</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--agi)"></div>Agility primary</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--intel)"></div>Intellect primary</div>
+    <div class="legend-item" style="border-left:1px solid var(--border);padding-left:14px"><span style="color:var(--gold);font-size:11px">› notes</span> = hero talent or context details</div>
+  </div>
+
+  <div class="results-bar" id="results-bar"></div>
+  <div class="classes-grid" id="classes"></div>
+  <div class="empty-state" id="empty-state" style="display:none">No specs match your search.</div>
+
+</div>
+
+<footer class="site-footer">
+  Data sourced from <a href="https://www.wowhead.com/guide/classes" target="_blank">Wowhead Class Guides</a> · Patch 12.0.1 · World of Warcraft: Midnight
+  <div class="disclaimer">
+    Stat priorities are a general guideline. Secondary stat values shift with gear levels, Hero Talent choice, and content type.
+    Always sim your own character at <a href="https://www.raidbots.com" target="_blank">Raidbots</a> for optimal results.
+    Wowhead guide pages use JavaScript rendering — all data verified via guide author notes and community theorycraft as of March 2026.
+  </div>
+</footer>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// DATA — Wowhead Midnight 12.0.1
+// Each spec: stats[0] = primary, stats[1..] = secondaries in priority order
+// equal: array of stat names that are considered equal priority (shown with = sign)
+// notes: array of bullet points with contextual detail
+// wh: wowhead guide URL slug
+// ─────────────────────────────────────────────────────────────
+const CLASSES = [
+  {
+    name:"Death Knight", icon:"DK", color:"#C41E3A", iconBg:"#3a0a10",
+    specs:[
+      {
+        name:"Blood", role:"Tank", primary:"Strength", roles:["tank"],
+        masteryName:"Mastery: Blood Shield",
+        stats:["Strength","Haste","Critical Strike","Versatility","Mastery"],
+        heroTalents:["Deathbringer: Strength > Crit = Vers = Mastery > Haste","San'layn: Strength > Haste > Crit = Vers = Mastery"],
+        notes:[
+          "Strength outweighs secondaries — always prioritize higher ilvl for its Strength gain and bonus Parry",
+          "Deathbringer build: Crit, Vers, and Mastery are near-equal; avoid over-stacking Haste",
+          "San'layn build: Haste jumps to #1 secondary due to Essence of the Blood Queen's multiplicative Haste scaling; more Rune/Runic Power spending inside Dancing Rune Weapon window",
+          "Mastery: Blood Shield generates an absorb on every Death Strike — valuable but not top priority vs Haste at baseline",
+          "Armor and Stamina from ilvl upgrades generally outweigh swapping secondaries on non-jewelry slots"
+        ],
+        wh:"classes/death-knight/blood/stat-priority-pve-tank"
+      },
+      {
+        name:"Frost", role:"DPS", primary:"Strength", roles:["dps"],
+        masteryName:"Mastery: Frozen Heart",
+        stats:["Strength","Mastery","Critical Strike","Haste","Versatility"],
+        notes:[
+          "Mastery: Frozen Heart gives a flat % bonus to all Frost damage — scales in both ST and AoE",
+          "Crit is vital: auto-attack crits proc Killing Machine, Icy Death Torrent, and The Long Winter",
+          "Multi-target: Mastery pulls further ahead of Crit due to broad Frost damage amplification",
+          "Single-target: Crit and Mastery are close; sim your char for the exact split",
+          "Haste increases attack speed (more Killing Machine procs), Rune regen, and globals — but scales lower than Mastery/Crit",
+          "Versatility is a flat throughput gain with no spec interactions — lowest priority"
+        ],
+        wh:"classes/death-knight/frost/stat-priority-pve-dps"
+      },
+      {
+        name:"Unholy", role:"DPS", primary:"Strength", roles:["dps"],
+        masteryName:"Mastery: Dreadblade",
+        stats:["Strength","Critical Strike","Mastery","Haste","Versatility"],
+        equal:["Critical Strike","Mastery"],
+        notes:[
+          "Crit and Mastery are very close — treat as co-equal secondaries; sim to decide per gear set",
+          "Mastery: Dreadblade increases Shadow damage and all Minion damage — scales well in AoE",
+          "Crit is the top secondary: core abilities deal Shadow damage that crits amplify strongly",
+          "Haste has diminished value vs Crit/Mastery — Haste does not increase disease tick rate, reducing its relative worth",
+          "Versatility provides a flat damage increase and minor DR — lowest priority for Unholy"
+        ],
+        wh:"classes/death-knight/unholy/stat-priority-pve-dps"
+      }
+    ]
+  },
+  {
+    name:"Demon Hunter", icon:"DH", color:"#A330C9", iconBg:"#2a0a38",
+    specs:[
+      {
+        name:"Havoc", role:"DPS", primary:"Agility", roles:["dps"],
+        masteryName:"Mastery: Demonic Presence",
+        stats:["Agility","Critical Strike","Mastery","Haste","Versatility"],
+        notes:[
+          "Havoc is a rapid-hit melee spec that benefits strongly from Crit's double-damage procs",
+          "Mastery: Demonic Presence increases Chaos damage — most Havoc abilities deal Chaos damage",
+          "Haste needs careful balancing — too much or too little disrupts the resource spending and cooldown pacing",
+          "Haste reduces GCD and increases auto-attack speed, but Crit and Mastery offer larger throughput gains",
+          "Versatility provides a minor flat damage increase; generally the weakest choice for Havoc",
+          "Both Aldrachi Reaver and Fel-Scarred hero talent trees share the same fundamental stat priority"
+        ],
+        wh:"classes/demon-hunter/havoc/stat-priority-pve-dps"
+      },
+      {
+        name:"Vengeance", role:"Tank", primary:"Agility", roles:["tank"],
+        masteryName:"Mastery: Fel Blood",
+        stats:["Agility","Critical Strike","Versatility","Mastery","Haste"],
+        notes:[
+          "Crit converts to Parry for Vengeance — Parry reduces incoming physical damage, making Crit a defensive stat as well as offensive",
+          "Versatility provides a flat damage reduction and increases your healing received, strong for survival",
+          "Mastery: Fel Blood increases Attack Power and the Agility-to-Armor conversion during Demon Spikes — meaningful but not dominant",
+          "Haste reduces cooldowns (Demon Spikes, Frailty, etc.) and speeds up resource generation",
+          "Same stat priority applies for both Aldrachi Reaver and Annihilator hero talent trees — both rely on the same core defensive loop"
+        ],
+        wh:"classes/demon-hunter/vengeance/stat-priority-pve-tank"
+      },
+      {
+        name:"Devourer", role:"DPS", primary:"Intellect", roles:["dps"], newSpec:true,
+        masteryName:"Mastery: Monster Within",
+        stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"],
+        heroTalents:["Annihilator: Intellect > Haste > Mastery > Crit > Vers (Haste strongly preferred in ST)","Void-Scarred: Intellect > Mastery > Haste > Crit > Vers (Mastery dominates in AoE/Meta windows)"],
+        notes:[
+          "Devourer is new in Midnight — an Intellect-based caster/melee hybrid using Warglaives that auto-convert to Intellect",
+          "Haste is critical: reduces channel time on Collapsing Star and Void Ray, enabling more casts within each Void Metamorphosis window",
+          "Mastery: Monster Within amplifies Cosmic damage — bonus is doubled during Void Metamorphosis, making it dominant in burst phases",
+          "Annihilator hero tree: Haste is the clear #1 secondary in single-target for maximizing Void Metamorphosis ramp via Emptiness",
+          "Void-Scarred hero tree: Mastery becomes dominant, especially in AoE, as Void Metamorphosis uptime maximizes the multiplier",
+          "Crit has some extra synergy via the Calamitous Apex talent (guaranteed Collapsing Star crits scale with Crit rating) but still trails Haste/Mastery",
+          "Versatility provides a flat damage/defensive gain — weakest secondary for Devourer in PvE"
+        ],
+        wh:"classes/demon-hunter/devourer/stat-priority-pve-dps"
+      }
+    ]
+  },
+  {
+    name:"Druid", icon:"Dr", color:"#FF7C0A", iconBg:"#3a1e00",
+    specs:[
+      {
+        name:"Balance", role:"DPS", primary:"Intellect", roles:["dps"],
+        masteryName:"Mastery: Starlight",
+        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"],
+        notes:[
+          "Mastery: Starlight increases all Arcane and Nature damage — affects nearly every Balance spell",
+          "The new Eclipse system in Midnight (Eclipse is now an active spell with charges) increases Mastery's value as Eclipse uptime directly scales ability damage",
+          "Haste reduces cast times on Wrath/Starfire fillers and lets you fit more spells into Eclipse windows",
+          "Keeper of the Grove hero talent: both Mastery and Haste remain the top secondaries",
+          "Elune's Chosen hero talent: focuses on Starfire chains — Haste gains extra value for cast speed; Crit slightly more useful but still third",
+          "Crit and Versatility are noticeably weaker for PvE damage outside of specific talent interactions"
+        ],
+        wh:"classes/druid/balance/stat-priority-pve-dps"
+      },
+      {
+        name:"Feral", role:"DPS", primary:"Agility", roles:["dps"],
+        masteryName:"Mastery: Razor Claws",
+        stats:["Agility","Mastery","Haste","Critical Strike","Versatility"],
+        notes:[
+          "Mastery: Razor Claws increases the damage of all bleeds and finishing moves — Feral's damage is heavily bleed-based, making Mastery extremely strong",
+          "Haste increases energy regeneration and attack speed, allowing more combo point generation and more finishers inside Tiger's Fury/Incarnation windows",
+          "Critical Strike increases bleed and finisher damage — good synergy but trails Mastery due to Mastery's broader coverage",
+          "Berserk Frenzy talent makes Crit slightly more valuable if talented, but does not displace Mastery from #1",
+          "Versatility is a flat damage boost with no spec-specific interactions — lowest priority for Feral in PvE"
+        ],
+        wh:"classes/druid/feral/stat-priority-pve-dps"
+      },
+      {
+        name:"Guardian", role:"Tank", primary:"Agility", roles:["tank"],
+        masteryName:"Mastery: Nature's Guardian",
+        stats:["Agility","Haste","Versatility","Critical Strike","Mastery"],
+        notes:[
+          "Haste increases attack speed (more Mangle/Thrash procs, more Rage generation) and reduces GCD, letting you get more defensive abilities out faster",
+          "Versatility provides flat damage reduction — strong defensive value for a tank",
+          "Crit increases Parry chance (via Agility's Crit-to-Parry conversion for tank specs) and damage",
+          "Mastery: Nature's Guardian increases max health and heals you periodically — passive survivability but lower throughput than Haste/Vers for active mitigation",
+          "Druid of the Claw hero talent: no change to stat priority — Haste still tops the list",
+          "Elune's Chosen hero talent: Haste remains strong as Lunar Beam cooldown reduction scales with more ability uses"
+        ],
+        wh:"classes/druid/guardian/stat-priority-pve-tank"
+      },
+      {
+        name:"Restoration", role:"Healer", primary:"Intellect", roles:["heal"],
+        masteryName:"Mastery: Harmony",
+        stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"],
+        notes:[
+          "Haste is the top secondary: reduces HoT tick time and cast times, dramatically increasing healing throughput and mana efficiency per second",
+          "Mastery: Harmony increases the healing of all periodic effects while you have an active HoT on the target — strong for Resto's HoT-heavy style",
+          "Crit provides a chance for heals to overheal for 200% — useful but lower value than Haste/Mastery for consistent output",
+          "Keeper of the Grove hero talent: Haste and Mastery remain top priority; no fundamental change",
+          "Wildstalker hero talent: Symbiotic Bloom healing procs scale with Mastery, slightly increasing Mastery's relative value",
+          "Versatility provides a flat increase to healing done — decent but generally the weakest secondary for Restoration"
+        ],
+        wh:"classes/druid/restoration/stat-priority-pve-healer"
+      }
+    ]
+  },
+  {
+    name:"Evoker", icon:"Ev", color:"#33937F", iconBg:"#082820",
+    specs:[
+      {
+        name:"Devastation", role:"DPS", primary:"Intellect", roles:["dps"],
+        masteryName:"Mastery: Giantkiller",
+        stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"],
+        notes:[
+          "Critical Strike is the top secondary — many Devastation abilities and Empower spell interactions scale strongly with Crit",
+          "Haste is highly valuable: increases cast speed and directly extends Dragonrage duration (more Haste = more Dragonrage actions); no hard breakpoints but higher Haste gives error leniency in the burst window",
+          "There is no hard Haste cap to target — sim your character as gear improves",
+          "Mastery: Giantkiller increases damage done to targets above 35% health — strong for most raid/dungeon scenarios but situational",
+          "Flameshaper hero talent: Crit remains dominant; Haste gains extra value for more Dream Breath charges",
+          "Tip the Scales (Flameshaper Apex): both Crit and Haste remain on top — no priority inversion",
+          "Item level is generally more important than perfect stat balance on non-jewelry/trinket slots"
+        ],
+        wh:"classes/evoker/devastation/stat-priority-pve-dps"
+      },
+      {
+        name:"Preservation", role:"Healer", primary:"Intellect", roles:["heal"],
+        masteryName:"Mastery: Life-Binder",
+        stats:["Intellect","Mastery","Critical Strike","Haste","Versatility"],
+        notes:[
+          "Mastery: Life-Binder increases healing done based on how far below your own health percentage the target is — consistently strong in raid environments",
+          "Aim for as much Mastery as possible while keeping other secondaries balanced; Mastery provides the largest healing increase per point",
+          "Critical Strike increases healing crits and pairs with several Preservation talents that interact with crit heals",
+          "Haste lowers GCD and cast times — useful for throughput but scales below Mastery and Crit for healing output",
+          "Chronowarden hero talent: Haste slightly increases in value due to Temporal Anomaly interaction and Tip the Scales buffing Haste",
+          "Flameshaper hero talent: Mastery remains top priority; Dream Breath's interaction with Merithra's Blessing (Apex talent) amplifies Mastery-scaled heals",
+          "Versatility provides flat healing increase — generally the weakest choice for healers; use for survivability if needed"
+        ],
+        wh:"classes/evoker/preservation/stat-priority-pve-healer"
+      },
+      {
+        name:"Augmentation", role:"Support", primary:"Intellect", roles:["support"],
+        masteryName:"Mastery: Timewalker",
+        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"],
+        equal:["Mastery","Haste"],
+        notes:[
+          "Augmentation's damage is heavily tied to buffing allies — stat values are strongly influenced by party composition and content type",
+          "Mastery: Timewalker increases the power of all Augmentation buffs, Ebon Might uptime effects, and personal damage — broadly the strongest secondary",
+          "Haste and Mastery are close — Haste provides more ability casts per Ebon Might window, which indirectly amplifies party buffs",
+          "Critical Strike benefits personal damage but provides no direct buff-amplification synergy — lower priority",
+          "Versatility provides flat damage/healing increases and minor DR — weakest secondary for Augmentation",
+          "Always sim Augmentation with the specific party buffs present — values shift significantly based on composition"
+        ],
+        wh:"classes/evoker/augmentation/stat-priority-pve-dps"
+      }
+    ]
+  },
+  {
+    name:"Hunter", icon:"Hu", color:"#AAD372", iconBg:"#1a2e08",
+    specs:[
+      {
+        name:"Beast Mastery", role:"DPS", primary:"Agility", roles:["dps"],
+        masteryName:"Mastery: Master of Beasts",
+        stats:["Agility","Critical Strike","Haste","Mastery","Versatility"],
+        notes:[
+          "Critical Strike increases pet damage and your own abilities — BM deals a large portion of damage through pets, and Crit amplifies both",
+          "Haste reduces Focus regeneration time and the cooldown of several key abilities; keeps pet damage more consistent",
+          "Mastery: Master of Beasts increases all pet and dire beast damage — scales in AoE but trails Crit in ST due to lower scaling coefficient in Midnight",
+          "Versatility provides a flat throughput increase with no spec interactions — weakest secondary",
+          "Pack Leader and Lone Wolf hero talent trees share the same fundamental stat priority for PvE"
+        ],
+        wh:"classes/hunter/beast-mastery/stat-priority-pve-dps"
+      },
+      {
+        name:"Marksmanship", role:"DPS", primary:"Agility", roles:["dps"],
+        masteryName:"Mastery: Sniper Training",
+        stats:["Agility","Critical Strike","Mastery","Haste","Versatility"],
+        notes:[
+          "Critical Strike is the clear top secondary for MM — Careful Aim and Unerring Vision talents provide strong Crit synergy on high-health targets",
+          "Mastery: Sniper Training increases the damage of all abilities and reduces Focus cost — broadly strong and scales with every spell",
+          "Haste reduces the cast time of Aimed Shot (the primary spender) and improves Focus regeneration; less impactful than Crit/Mastery due to Aimed Shot's mechanics",
+          "Lone Wolf hero talent: no stat priority change — Crit remains dominant",
+          "Dark Ranger hero talent: Crit still leads; Black Arrow synergy with Crit is slightly more pronounced",
+          "Versatility is the weakest secondary — flat damage increase with no MM-specific interactions"
+        ],
+        wh:"classes/hunter/marksmanship/stat-priority-pve-dps"
+      },
+      {
+        name:"Survival", role:"DPS", primary:"Agility", roles:["dps"],
+        masteryName:"Mastery: Spirit Bond",
+        stats:["Agility","Mastery","Haste","Critical Strike","Versatility"],
+        notes:[
+          "Mastery: Spirit Bond increases the damage of all your abilities while your pet is alive — Survival deals significant physical and nature damage that all benefits from Mastery",
+          "Haste reduces GCD and the cooldown of Kill Command, increasing both your own and your pet's attack speed",
+          "Critical Strike provides a chance to double damage on abilities but has no strong talent synergies in Survival's toolkit for Midnight",
+          "Pack Leader hero talent: Mastery remains top secondary due to broad damage amplification",
+          "Versatility is the weakest secondary for Survival — flat damage increase only"
+        ],
+        wh:"classes/hunter/survival/stat-priority-pve-dps"
+      }
+    ]
+  },
+  {
+    name:"Mage", icon:"Ma", color:"#3FC7EB", iconBg:"#051e2a",
+    specs:[
+      {
+        name:"Arcane", role:"DPS", primary:"Intellect", roles:["dps"],
+        masteryName:"Mastery: Savant",
+        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"],
+        notes:[
+          "Mastery: Savant increases your Mana pool and Mana regeneration, allows more Arcane Charge casts between Evocations, and amplifies the damage bonus of Arcane Charges — extremely valuable",
+          "Haste increases cast speed of all spells; in Midnight with higher ilvl gear, Haste gains value relative to Mastery due to reaching better cast time breakpoints",
+          "Critical Strike increases all spell crit chance — useful but Mastery's Mana interaction means Mastery almost always outperforms it for Arcane",
+          "Arcane Surge hero talent: Mastery remains dominant due to Mana pool scaling with Arcane Surge windows",
+          "Spellslinger hero talent: Haste and Mastery may swap positions — Haste enables faster Arcane Orb generation; sim recommended",
+          "Versatility is the weakest secondary — flat damage increase with no Arcane-specific synergy"
+        ],
+        wh:"classes/mage/arcane/stat-priority-pve-dps"
+      },
+      {
+        name:"Fire", role:"DPS", primary:"Intellect", roles:["dps"],
+        masteryName:"Mastery: Ignite",
+        stats:["Intellect","Critical Strike","Mastery","Haste","Versatility"],
+        notes:[
+          "Critical Strike is the clear #1 secondary for Fire — Ignite's rolling damage is seeded by crits, and talents like Kindling, Hot Streak, and Pyromaniac all heavily reward Crit",
+          "Mastery: Ignite causes crits to apply a DoT for a portion of the damage dealt — Mastery scales the Ignite value, making Crit and Mastery highly synergistic",
+          "Combustion window relies on guaranteed crits; Crit outside of Combustion affects Ignite ramp and filler damage",
+          "Haste reduces cast times (Fireball, Pyroblast) and GCD, giving more actions per Combustion window — useful but outpaced by Crit/Mastery",
+          "Sunfury hero talent: Crit remains top; Spellfire Spheres benefit from high Crit interaction",
+          "Frostfire hero talent: Crit still leads; Frostfire Bolt crits seed stronger Ignite applications",
+          "Versatility is the weakest secondary for Fire — flat throughput increase with no crit interaction"
+        ],
+        wh:"classes/mage/fire/stat-priority-pve-dps"
+      },
+      {
+        name:"Frost", role:"DPS", primary:"Intellect", roles:["dps"],
+        masteryName:"Mastery: Freeze & Shatter",
+        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"],
+        notes:[
+          "Mastery: Freeze and Shatter is a flat damage increase to all spells that Freeze or Shatter targets — covers Frostbolt, Frozen Orb, Blizzard, and more",
+          "Mastery scales exceptionally well in multi-target (Blizzard/Frozen Orb are both included in the Freezing side of Mastery)",
+          "Haste reduces Frostbolt cast time — more Frostbolts = more Fingers of Frost and Brain Freeze procs, accelerating Icicle generation",
+          "Haste also increases Water Elemental and Mirror Images cast speed",
+          "Critical Strike increases crit chance on all spells but has no specific talent synergy in Frost comparable to Fire's Hot Streak — lower priority",
+          "Frostfire hero talent: Mastery still leads for Frost; Frostfire Bolt gains Shatter interaction if Frozen, keeping Mastery strong",
+          "Versatility provides flat damage increase with no Frost-specific interaction — lowest secondary priority"
+        ],
+        wh:"classes/mage/frost/stat-priority-pve-dps"
+      }
+    ]
+  },
+  {
+    name:"Monk", icon:"Mo", color:"#00FF98", iconBg:"#002e18",
+    specs:[
+      {
+        name:"Brewmaster", role:"Tank", primary:"Agility", roles:["tank"],
+        masteryName:"Mastery: Elusive Brawler",
+        stats:["Agility","Haste","Versatility","Critical Strike","Mastery"],
+        notes:[
+          "Haste reduces the cooldown of Keg Smash and Blackout Kick, generating more Brew charges faster — directly improves Stagger purification uptime",
+          "Haste also increases energy regeneration, giving more actions per second for filling Celestial Brew and Purifying Brew windows",
+          "Versatility reduces incoming damage and increases all damage/healing — strong defensive secondary for tanks",
+          "Critical Strike increases damage and Parry chance (Agility-to-Parry conversion) — useful but lower priority than Haste/Vers",
+          "Mastery: Elusive Brawler grants stacking Dodge chance with each melee attack received — the passive is strong but the secondary stat per-point value is low",
+          "Shado-Pan hero talent: Haste remains top for maximizing ability cycling; no change to priority",
+          "Jade Bond hero talent: no change to stat priority"
+        ],
+        wh:"classes/monk/brewmaster/stat-priority-pve-tank"
+      },
+      {
+        name:"Mistweaver", role:"Healer", primary:"Intellect", roles:["heal"],
+        masteryName:"Mastery: Gust of Mists",
+        stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"],
+        notes:[
+          "Critical Strike is the top secondary for Mistweaver — Mist of Life and Rising Mist both benefit strongly from crit heals; Ancient Teachings (Mastery of Harmony) also gains from healing crits",
+          "Haste reduces GCD and cast times for Vivify, Enveloping Mist, and Rising Sun Kick — more actions means more Mists and Renewing Mist propagation",
+          "Mastery: Gust of Mists adds a bonus heal to Effuse, Vivify, and Enveloping Mist on injured targets — consistent passive throughput but scales below Crit/Haste",
+          "Jade Bond hero talent: Crit remains top; Ancient Teachings interaction is strongest with high Crit",
+          "Shado-Pan hero talent: Crit still leads — Shado-Pan abilities scale with all healing output, and crits amplify total throughput",
+          "Versatility provides flat healing increase — weakest secondary for Mistweaver; use on PvP or when extra survivability is needed"
+        ],
+        wh:"classes/monk/mistweaver/stat-priority-pve-healer"
+      },
+      {
+        name:"Windwalker", role:"DPS", primary:"Agility", roles:["dps"],
+        masteryName:"Mastery: Combo Strikes",
+        stats:["Agility","Versatility","Critical Strike","Haste","Mastery"],
+        notes:[
+          "Versatility is the top secondary for Windwalker — Mastery: Combo Strikes gives a large damage bonus to abilities not repeated consecutively, and Versatility amplifies all that damage with no restrictions",
+          "Versatility also supports Windwalker's frequent self-healing from Vivify and other healing abilities during high-movement fights",
+          "Critical Strike increases damage on all hits — synergizes with fast multi-hit style but trails Versatility in overall throughput",
+          "Haste provides faster attack speed, energy regen, and reduces Fists of Fury / Rising Sun Kick cooldowns — useful but outpaced by Vers/Crit",
+          "Mastery: Combo Strikes itself has high intrinsic value through the rotation (avoid repeating abilities), but the secondary stat per-point value is relatively low — avoid stacking it directly",
+          "Conduit of the Celestials hero talent: Versatility remains top; burst windows align best with Vers amplification",
+          "Master of Harmony hero talent: same priority — Vers and Crit remain the top secondaries"
+        ],
+        wh:"classes/monk/windwalker/stat-priority-pve-dps"
+      }
+    ]
+  },
+  {
+    name:"Paladin", icon:"Pa", color:"#F48CBA", iconBg:"#38101e",
+    specs:[
+      {
+        name:"Holy", role:"Healer", primary:"Intellect", roles:["heal"],
+        masteryName:"Mastery: Lightbringer",
+        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"],
+        notes:[
+          "Mastery: Lightbringer increases all healing done to nearby targets, and the bonus increases the closer you are to them — strong in melee-range raids and stacked encounters",
+          "Haste reduces GCD and cast times on Holy Light and Flash of Light; also reduces the cooldown of Holy Shock",
+          "Critical Strike provides a chance for heals to double — useful but lower value than Mastery/Haste for consistent Holy Paladin throughput",
+          "Herald of the Sun hero talent: Mastery remains top priority; Sun's Avatar healing scales well with Mastery's proximity bonus",
+          "Lightsmith hero talent: Mastery and Haste remain dominant; Sacred Weapon empowers your heals with no stat priority shift",
+          "Versatility provides flat healing increase — generally weakest for Holy Paladin but useful for solo content and survivability"
+        ],
+        wh:"classes/paladin/holy/stat-priority-pve-healer"
+      },
+      {
+        name:"Protection", role:"Tank", primary:"Strength", roles:["tank"],
+        masteryName:"Mastery: Divine Bulwark",
+        stats:["Strength","Haste","Critical Strike","Versatility","Mastery"],
+        notes:[
+          "Haste is the top secondary: reduces cooldowns on Shield of the Righteous and Word of Glory, and generates more Holy Power per minute via faster melee attacks and GCD reduction",
+          "Critical Strike increases damage and has a Parry interaction through the Riposte passive — both offensive and defensive value",
+          "Versatility reduces incoming damage and increases all output — reliable defensive secondary for Protection",
+          "Mastery: Divine Bulwark increases Block chance and the value of Consecrated Ground — meaningful but the lowest secondary per-point value for Protection Paladin",
+          "Lightsmith hero talent: Haste remains top; Sacred Weapon uptime benefits from faster Holy Power generation",
+          "Herald of the Sun hero talent: no change to stat priority — same Haste-first approach"
+        ],
+        wh:"classes/paladin/protection/stat-priority-pve-tank"
+      },
+      {
+        name:"Retribution", role:"DPS", primary:"Strength", roles:["dps"],
+        masteryName:"Mastery: Hand of Light",
+        stats:["Strength","Mastery","Critical Strike","Haste","Versatility"],
+        notes:[
+          "Mastery: Hand of Light causes all Holy damage abilities to trigger a bonus Holy damage proc — Retribution's primary damage is Holy, making Mastery extremely strong across the board",
+          "Critical Strike amplifies burst windows (Avenging Wrath / Avenging Crusader) and pairs well with the Mastery proc's crit potential",
+          "Haste reduces GCD and increases attack speed — more melee swings and more Holy Power generation, but Mastery and Crit offer larger multipliers",
+          "Herald of the Sun hero talent: Mastery remains dominant; Sun's Avatar is a Holy damage source amplified directly by Mastery",
+          "Templar hero talent: Mastery still leads; Templar's Verdict interactions are Holy-damage based",
+          "Versatility is a flat damage increase with no Retribution-specific synergy — lowest secondary priority"
+        ],
+        wh:"classes/paladin/retribution/stat-priority-pve-dps"
+      }
+    ]
+  },
+  {
+    name:"Priest", icon:"Pr", color:"#EAEAEA", iconBg:"#202020",
+    specs:[
+      {
+        name:"Discipline", role:"Healer", primary:"Intellect", roles:["heal"],
+        masteryName:"Mastery: Grace",
+        stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"],
+        notes:[
+          "Critical Strike is the top secondary for Discipline — crits trigger Divine Aegis (bonus absorb shields from heals), and Atonement healing output scales significantly with Crit",
+          "Haste reduces GCD and cast times on Smite, Penance, and Power Word: Radiance — more abilities = more Atonement healing per ramp",
+          "Mastery: Grace increases the effectiveness of your heals and absorbs on targets with your Atonement — strong in theory but lower per-point value than Crit for burst healing phases",
+          "Voidweaver hero talent: Crit remains top; Entropic Rift damage via Atonement rewards high Crit for max throughput in burst phases",
+          "Oracle hero talent: same stat priority — Premonition of Solace benefits from high Crit through Atonement conversion",
+          "Versatility provides flat healing/damage increase — lowest secondary priority for Discipline Priest"
+        ],
+        wh:"classes/priest/discipline/stat-priority-pve-healer"
+      },
+      {
+        name:"Holy", role:"Healer", primary:"Intellect", roles:["heal"],
+        masteryName:"Mastery: Echo of Light",
+        stats:["Intellect","Critical Strike","Mastery","Versatility","Haste"],
+        notes:[
+          "Critical Strike is the top secondary for Holy — crits trigger Holy Word: Serenity cooldown reduction, which is Holy's primary single-target cooldown; also triggers Surge of Light procs (free instant Flash of Light)",
+          "Mastery: Echo of Light applies a HoT for a portion of the heal amount — scales well in multi-target and sustained healing scenarios",
+          "Versatility provides flat healing increase and minor DR — in raid content, Vers edges out Haste due to the importance of steady throughput and survivability in healing",
+          "Haste drops to #5 for Holy in raid: Holy Word cooldowns are the key healing engine, and they reduce via Crit-triggered mechanisms, not Haste directly; Haste still useful in M+ for faster Flash of Light/Prayer of Healing casting",
+          "Archon hero talent: Crit remains top; Halo crit interactions amplify burst healing windows",
+          "Holy Word: Salvation hero talent: Mastery and Vers slightly increase in value for multi-target sustained healing ramps"
+        ],
+        wh:"classes/priest/holy/stat-priority-pve-healer"
+      },
+      {
+        name:"Shadow", role:"DPS", primary:"Intellect", roles:["dps"],
+        masteryName:"Mastery: Shadow Weaving",
+        stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"],
+        notes:[
+          "Haste is the top secondary for Shadow — reduces GCD and cast times (Mind Flay, Mind Blast), and is critical for fitting more abilities into Voidform/Dark Ascension windows; also increases Insanity generation rate",
+          "Mastery: Shadow Weaving increases all Shadow damage dealt — broadly strong across all of Shadow's toolkit",
+          "Critical Strike provides double-damage procs and has minor talent synergies in Midnight (Shadowy Insight proc scaling) but trails Haste/Mastery",
+          "Voidweaver hero talent: Haste remains top; Entropic Rift casts benefit from fast GCD cycling",
+          "Archon hero talent: Haste still leads — Perfected Form amplification scales with the number of abilities used in Voidform windows",
+          "Versatility is the weakest secondary for Shadow — flat damage increase with no Shadow-specific interactions"
+        ],
+        wh:"classes/priest/shadow/stat-priority-pve-dps"
+      }
+    ]
+  },
+  {
+    name:"Rogue", icon:"Ro", color:"#FFF468", iconBg:"#2a2800",
+    specs:[
+      {
+        name:"Assassination", role:"DPS", primary:"Agility", roles:["dps"],
+        masteryName:"Mastery: Potent Assassin",
+        stats:["Agility","Mastery","Critical Strike","Haste","Versatility"],
+        notes:[
+          "Mastery: Potent Assassin increases the damage of all Poison and Bleed effects — Assassination's damage is overwhelmingly Poison and Bleed based, making Mastery the clear top secondary",
+          "Critical Strike amplifies Envenom and Garrote crits; also has some synergy with Elaborate Planning talent (buff after consuming a finisher)",
+          "Haste increases Energy regeneration, allowing more combo point generation and finisher usage inside Vendetta/Deathmark windows",
+          "Indiscriminate Carnage hero talent: Mastery remains dominant — AoE bleeds and Poisons all scale with Mastery",
+          "Deathstalker hero talent: same priority — Mastery still leads for bleed amplification",
+          "Versatility is the weakest secondary for Assassination — flat damage increase with no bleed/poison interaction"
+        ],
+        wh:"classes/rogue/assassination/stat-priority-pve-dps"
+      },
+      {
+        name:"Outlaw", role:"DPS", primary:"Agility", roles:["dps"],
+        masteryName:"Mastery: Main Gauche",
+        stats:["Agility","Versatility","Critical Strike","Haste","Mastery"],
+        notes:[
+          "Versatility is the top secondary for Outlaw — Mastery: Main Gauche procs an extra off-hand attack; Versatility amplifies the damage of every attack including Main Gauche procs, and also boosts Roll the Bones buff value",
+          "Critical Strike synergizes with Between the Eyes (guaranteed crit against Stunned targets) and generally amplifies fast-hitting melee",
+          "Haste increases Energy regeneration and attack speed — useful for maintaining Blade Flurry and generating combo points during Adrenaline Rush",
+          "Mastery: Main Gauche itself is very strong passive proc damage, but the secondary stat per-point value for the Mastery stat is lower than Vers/Crit",
+          "Fatebound hero talent: Versatility remains top; Fatebound Coin flips benefit from broad damage increases",
+          "Trickster hero talent: same priority — Versatility and Crit remain the top secondaries"
+        ],
+        wh:"classes/rogue/outlaw/stat-priority-pve-dps"
+      },
+      {
+        name:"Subtlety", role:"DPS", primary:"Agility", roles:["dps"],
+        masteryName:"Mastery: Executioner",
+        stats:["Agility","Mastery","Critical Strike","Haste","Versatility"],
+        notes:[
+          "Mastery: Executioner increases the damage of all finishing moves — Subtlety is heavily finisher-dependent (Eviscerate, Black Powder), making Mastery broadly strong",
+          "Critical Strike amplifies every finisher and ability; synergizes with Find Weakness talent (guaranteed crits during Shadowstrike) for burst windows",
+          "Haste increases Energy regeneration and speeds up the combo point → finisher cycle; also reduces GCD for tighter rotation windows",
+          "Deathstalker hero talent: Mastery remains top; Deathstalker's Mark damage from finishing moves is amplified by Mastery",
+          "Trickster hero talent: Mastery and Crit remain equal leaders; Unseen Blade's finishing move interaction scales with both",
+          "Versatility is the weakest secondary for Subtlety — flat damage increase with no finisher-specific interaction"
+        ],
+        wh:"classes/rogue/subtlety/stat-priority-pve-dps"
+      }
+    ]
+  },
+  {
+    name:"Shaman", icon:"Sh", color:"#0070DD", iconBg:"#001530",
+    specs:[
+      {
+        name:"Elemental", role:"DPS", primary:"Intellect", roles:["dps"],
+        masteryName:"Mastery: Elemental Overload",
+        stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"],
+        notes:[
+          "Haste is the top secondary for Elemental — reduces GCD and cast times (Lava Burst, Lightning Bolt), enabling more casts inside Stormkeeper and Fire Elemental windows; faster cast = faster Maelstrom generation",
+          "Mastery: Elemental Overload causes spells to proc an additional smaller cast — procs freely scale with all secondaries, but Haste's ability to generate more base casts makes it more valuable than Mastery per stat point",
+          "Critical Strike increases all spell damage via crits — decent but no strong talent synergies that push it above Haste/Mastery",
+          "Farseer hero talent: Haste remains top; Spirit calls benefit from faster GCD cycling to maximize simultaneous buffs",
+          "Stormbringer hero talent: Haste still leads — Tempest storm window uses casts-per-second for maximum value",
+          "Versatility is the weakest secondary for Elemental — flat damage increase with no Overload interaction"
+        ],
+        wh:"classes/shaman/elemental/stat-priority-pve-dps"
+      },
+      {
+        name:"Enhancement", role:"DPS", primary:"Agility", roles:["dps"],
+        masteryName:"Mastery: Enhanced Elements",
+        stats:["Agility","Haste","Mastery","Critical Strike","Versatility"],
+        notes:[
+          "Haste is the top secondary for Enhancement — increases melee attack speed, reduces GCD, speeds up Maelstrom Weapon stacking, and enables more casts inside Ascendance/Feral Spirit windows",
+          "Mastery: Enhanced Elements increases the damage of all Lightning, Fire, and Frost abilities — Enhancement deals significant elemental damage through Lava Lash, Flametongue, and Stormstrike's lightning",
+          "Critical Strike amplifies Stormstrike and Lava Lash; some synergy with Elemental Assault and Storm Swell talents but trails Haste/Mastery",
+          "Farseer hero talent: same priority — Haste leads for maximizing spirit-call windows",
+          "Totemic hero talent: Haste remains top; Totem of the Plains Elemental interacts with faster Maelstrom generation",
+          "Versatility provides flat damage increase with no elemental-specific interaction — lowest secondary priority for Enhancement"
+        ],
+        wh:"classes/shaman/enhancement/stat-priority-pve-dps"
+      },
+      {
+        name:"Restoration", role:"Healer", primary:"Intellect", roles:["heal"],
+        masteryName:"Mastery: Deep Healing",
+        stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"],
+        notes:[
+          "Haste is the top secondary for Restoration — reduces GCD and cast times for Healing Wave, Healing Surge, and Chain Heal; also increases HoT tick rates for Riptide and Healing Rain",
+          "Mastery: Deep Healing increases healing done the lower a target's health is — strong for reactive healing and critically injured targets; less valuable for proactive/HoT-based healing",
+          "Critical Strike provides a chance for heals to overheal for double; pairs with High Tide talent for large Chain Heal crits",
+          "Farseer hero talent: Haste remains top; Ancestor spirit calls benefit from faster healing rotations",
+          "Totemic hero talent: Haste remains top; Totem healing abilities scale with cast frequency",
+          "Versatility provides flat healing/damage increase — generally the weakest secondary for Restoration Shaman"
+        ],
+        wh:"classes/shaman/restoration/stat-priority-pve-healer"
+      }
+    ]
+  },
+  {
+    name:"Warlock", icon:"Wl", color:"#8788EE", iconBg:"#0d0d2e",
+    specs:[
+      {
+        name:"Affliction", role:"DPS", primary:"Intellect", roles:["dps"],
+        masteryName:"Mastery: Potent Afflictions",
+        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"],
+        notes:[
+          "Mastery: Potent Afflictions increases the damage of all Affliction DoTs — Corruption, Agony, Unstable Affliction, and Malefic Rapture are the entire damage kit; Mastery buffs all of them directly",
+          "Haste increases the tick rate of all DoTs and reduces GCD — more ticks = more Malefic Rapture damage and Soul Shards generated; in AoE Haste can approach Mastery in value",
+          "Critical Strike amplifies Malefic Rapture and Shadowbolt but has no DoT tick doubling in Midnight — lower priority than Mastery/Haste",
+          "Soul Harvester hero talent: Mastery remains top; Tormented Crescendo's damage from Malefic Rapture scales with Mastery-buffed DoTs",
+          "Hellcaller hero talent: Mastery remains dominant — Wither (the new Hellcaller DoT) is amplified by Mastery directly",
+          "Versatility is the weakest secondary for Affliction — flat damage increase with no DoT interaction"
+        ],
+        wh:"classes/warlock/affliction/stat-priority-pve-dps"
+      },
+      {
+        name:"Demonology", role:"DPS", primary:"Intellect", roles:["dps"],
+        masteryName:"Mastery: Master Demonologist",
+        stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"],
+        notes:[
+          "Haste is the top secondary for Demonology — speeds up Hand of Gul'dan cast time, accelerates Demonic Core proc rate, and increases the number of Wild Imps summoned per Dreadstalker call inside Demonic Tyrant windows",
+          "Critical Strike amplifies Call Dreadstalkers, Felguard, Grimoire: Felguard, and all Wild Imp damage; also has some synergy with Demonic Strength talent",
+          "Mastery: Master Demonologist increases the damage of all summoned demons — strong in principle but the stat per-point value is lower than Haste/Crit for overall output",
+          "Diabolist hero talent: Haste remains top; Diabolic Ritual benefits from faster cycling through its phases",
+          "Soul Harvester hero talent: Haste remains dominant; Soul Shards from Haste-fueled Hand of Gul'dan spam maximizes Demonbolt throughput",
+          "Versatility is the weakest secondary for Demonology — flat damage increase with no demon-specific interaction"
+        ],
+        wh:"classes/warlock/demonology/stat-priority-pve-dps"
+      },
+      {
+        name:"Destruction", role:"DPS", primary:"Intellect", roles:["dps"],
+        masteryName:"Mastery: Chaotic Energies",
+        stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"],
+        notes:[
+          "Haste is the top secondary for Destruction — speeds up Incinerate/Chaos Bolt cast times, generates Soul Shards faster, and enables more casts inside Infernal/Dark Soul windows",
+          "Critical Strike amplifies Chaos Bolt (the primary spender) and Shadowburn crits — Chaos Bolt naturally hits hard and crits double that; strong for burst phases",
+          "Mastery: Chaotic Energies provides a random bonus damage percent on all spells — broad but random; the variance makes it less reliable than Haste/Crit despite good average value",
+          "Diabolist hero talent: Haste remains top; Diabolic Ritual window fits more Chaos Bolts with higher Haste",
+          "Hellcaller hero talent: same priority — Chaos Bolt spam and Wither DoTs both favor Haste leading into windows",
+          "Versatility is the weakest secondary for Destruction — flat damage with no Soul Shard or crit interaction"
+        ],
+        wh:"classes/warlock/destruction/stat-priority-pve-dps"
+      }
+    ]
+  },
+  {
+    name:"Warrior", icon:"Wa", color:"#C69B3A", iconBg:"#2a1e00",
+    specs:[
+      {
+        name:"Arms", role:"DPS", primary:"Strength", roles:["dps"],
+        masteryName:"Mastery: Deep Wounds",
+        stats:["Strength","Critical Strike","Haste","Mastery","Versatility"],
+        notes:[
+          "Critical Strike is the top secondary for Arms — Mortal Strike, Overpower, Execute, and Colossus Smash windows all reward heavily from double-damage crits; Seasoned Soldier talent (passive Crit bonus in combat) amplifies this",
+          "Haste reduces GCD and increases auto-attack speed — more rage generation means more Mortal Strike and Slam casts; also reduces Execute and Bladestorm cooldowns",
+          "Mastery: Deep Wounds applies and extends a bleed on targets you critically strike — bleed damage scales with Mastery, creating a Crit/Mastery synergy, but Crit's direct doubling value is higher",
+          "Colossus hero talent: Crit remains top; Colossal Might stacks are built faster with higher attack speed (Haste aids here) but Crit burst windows are the payoff",
+          "Slayer hero talent: Crit remains top — Slayer's Dominance provides bonus Overpower damage on crits",
+          "Versatility is the weakest secondary for Arms — flat damage with no Deep Wounds or Crit interaction"
+        ],
+        wh:"classes/warrior/arms/stat-priority-pve-dps"
+      },
+      {
+        name:"Fury", role:"DPS", primary:"Strength", roles:["dps"],
+        masteryName:"Mastery: Unshackled Fury",
+        stats:["Strength","Haste","Critical Strike","Versatility","Mastery"],
+        notes:[
+          "Haste is the top secondary for Fury — increases melee attack speed dramatically (Fury attacks extremely fast), enabling more Rampage procs, faster Rage generation, and more Bloodthirst/Raging Blow hits inside Recklessness",
+          "Critical Strike amplifies all the rapid attacks and has strong synergy with Bloodthirst's 30% crit chance baseline; also interacts with Sudden Death procs (free Execute on crit)",
+          "Versatility provides flat damage increase and minor DR — better for Fury than Mastery due to broad amplification of all the rapid-hit damage",
+          "Mastery: Unshackled Fury increases damage while Enraged — Arms/prot Warriors get better Mastery value; Fury's Mastery is decent but lowest priority secondary since Enrage uptime isn't 100%",
+          "Slayer hero talent: Haste remains top; Slayer's Dominance benefits from faster attack cycling",
+          "Mountain Thane hero talent: Haste remains dominant — Thunder Clap and Thunderous Roar benefit from higher attack speed and Rage flow"
+        ],
+        wh:"classes/warrior/fury/stat-priority-pve-dps"
+      },
+      {
+        name:"Protection", role:"Tank", primary:"Strength", roles:["tank"],
+        masteryName:"Mastery: Critical Block",
+        stats:["Strength","Haste","Critical Strike","Versatility","Mastery"],
+        notes:[
+          "Haste is the top secondary for Protection Warrior — reduces cooldowns on Shield Slam, Revenge, and Thunder Clap, generating more Rage and more frequent Shield Block applications (the core active mitigation)",
+          "Critical Strike interacts with Mastery: Critical Block (see below) — crits have a chance to fully block attacks; also increases damage and rage generation",
+          "Versatility provides flat damage reduction and damage increase — strong defensive secondary for Protection",
+          "Mastery: Critical Block increases Block chance and the chance for blocks to become Critical Blocks (fully negate physical damage) — strong but lower per-point value than Haste/Crit for active mitigation throughput",
+          "Colossus hero talent: Haste remains top; Colossal Might generates faster with higher attack speed",
+          "Thunderlord hero talent: same stat priority — Haste-driven cooldown reduction maximizes Shield Slam / Thunder Clap cycling"
+        ],
+        wh:"classes/warrior/protection/stat-priority-pve-tank"
+      }
+    ]
+  }
+];
+
+// ── COLORS ──────────────────────────────────────────────────
+const STAT_COLORS = {
+  "Critical Strike":"#e05252","Haste":"#e09c38","Mastery":"#38b87a",
+  "Versatility":"#3d8fd6","Strength":"#d86040","Agility":"#68b830","Intellect":"#8880e0"
+};
+const RANK_PALETTE = ["#d86040","#e09c38","#38b87a","#3d8fd6","#8880e0"];
+const PRIMARY_CLASS = {"Strength":"p-str","Agility":"p-agi","Intellect":"p-int"};
+const ROLE_LABELS = {dps:"DPS",tank:"Tank",heal:"Healer",support:"Support"};
+const ROLE_TAG_CLASS = {dps:"tag-dps",tank:"tag-tank",heal:"tag-heal",support:"tag-support"};
+const SHORT = {
+  "Critical Strike":"Crit","Versatility":"Vers","Mastery":"Mastery",
+  "Haste":"Haste","Strength":"Str","Agility":"Agi","Intellect":"Int"
+};
+
+// ── RENDER ───────────────────────────────────────────────────
+function buildSpec(spec) {
+  const secondaries = spec.stats.slice(1);
+  const total = secondaries.length;
+  const pcts = secondaries.map((_, i) => Math.round(100 - (i * 70 / (total - 1))));
+  const equal = spec.equal || [];
+
+  let statsHtml = secondaries.map((s, i) => {
+    const rankNum = i + 1;
+    const rankColor = RANK_PALETTE[i] || RANK_PALETTE[4];
+    const col = STAT_COLORS[s] || "#888";
+    const isEqual = i > 0 && equal.includes(s) && equal.includes(secondaries[i-1]);
+    const equalSign = isEqual ? `<span class="stat-equal">=</span>` : "";
+    return `${equalSign}<div class="stat-row">
+      <div class="stat-rank" style="background:${rankColor}1e;color:${rankColor};border:1px solid ${rankColor}38">${rankNum}</div>
+      <span class="stat-label">${SHORT[s]||s}</span>
+      <div class="stat-bar"><div class="stat-fill" style="width:${pcts[i]}%;background:${col}"></div></div>
+    </div>`;
+  }).join("");
+
+  let heroHtml = "";
+  if (spec.heroTalents && spec.heroTalents.length) {
+    heroHtml = spec.heroTalents.map(h => `<div class="note-ht">${h}</div>`).join("");
+  }
+
+  let notesHtml = "";
+  if (spec.notes && spec.notes.length) {
+    notesHtml = `<div class="spec-notes">${spec.notes.map(n=>`<div class="note-item"><span>${n}</span></div>`).join("")}</div>`;
+  }
+
+  const whUrl = `https://www.wowhead.com/guide/${spec.wh}`;
+  const newBadge = spec.newSpec ? `<span class="new-badge">new</span>` : "";
+
+  return `<div class="spec-card" data-roles='${JSON.stringify(spec.roles)}' data-primary='${spec.primary.toLowerCase().slice(0,3)}' data-name='${spec.name.toLowerCase()}'>
+    <div class="spec-header">
+      <div class="spec-name">${spec.name}${newBadge}</div>
+      <span class="role-tag spec-role-badge ${ROLE_TAG_CLASS[spec.roles[0]]}">${ROLE_LABELS[spec.roles[0]]}</span>
+    </div>
+    <div class="spec-mastery-name">${spec.masteryName}</div>
+    <span class="primary-badge ${PRIMARY_CLASS[spec.primary]}">${spec.primary}</span>
+    <div class="stat-list">${statsHtml}</div>
+    ${heroHtml}
+    ${notesHtml}
+    <a class="wh-link" href="${whUrl}" target="_blank">wowhead.com stat priority guide</a>
+  </div>`;
+}
+
+function buildClass(cls) {
+  const allRoles = [...new Set(cls.specs.flatMap(s=>s.roles))];
+  const primaries = [...new Set(cls.specs.map(s=>s.primary.toLowerCase().slice(0,3)))];
+  const roleTags = allRoles.map(r=>`<span class="role-tag ${ROLE_TAG_CLASS[r]}">${ROLE_LABELS[r]}</span>`).join("");
+  const specsHtml = cls.specs.map(buildSpec).join("");
+  return `<div class="class-block" data-roles='${JSON.stringify(allRoles)}' data-primaries='${JSON.stringify(primaries)}' data-class='${cls.name.toLowerCase()}'>
+    <div class="class-header" onclick="toggleClass(this)">
+      <div class="class-icon" style="background:${cls.iconBg};color:${cls.color};border-color:${cls.color}30">${cls.icon}</div>
+      <span class="class-name">${cls.name}</span>
+      <span class="class-meta">${cls.specs.length} specs</span>
+      <div class="class-tags">${roleTags}</div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="specs-grid">${specsHtml}</div>
+  </div>`;
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+const container = document.getElementById("classes");
+container.innerHTML = CLASSES.map(buildClass).join("");
+
+function updateResultsBar() {
+  const visible = document.querySelectorAll(".spec-card:not(.hidden)").length;
+  const total = document.querySelectorAll(".spec-card").length;
+  const bar = document.getElementById("results-bar");
+  bar.textContent = visible === total ? `Showing all ${total} specializations` : `Showing ${visible} of ${total} specializations`;
+}
+updateResultsBar();
+
+// ── COLLAPSE ─────────────────────────────────────────────────
+function toggleClass(header) {
+  header.closest(".class-block").classList.toggle("collapsed");
+}
+
+// ── FILTERS ──────────────────────────────────────────────────
+let activeFilter = "all";
+let searchTerm = "";
+
+document.getElementById("filters").addEventListener("click", e => {
+  const btn = e.target.closest(".filter-btn");
+  if (!btn) return;
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  activeFilter = btn.dataset.filter;
+  applyFilters();
+});
+
+document.getElementById("search").addEventListener("input", e => {
+  searchTerm = e.target.value.trim().toLowerCase();
+  applyFilters();
+});
+
+function applyFilters() {
+  let specCount = 0;
+  document.querySelectorAll(".class-block").forEach(block => {
+    const blockRoles = JSON.parse(block.dataset.roles||"[]");
+    const blockPrimaries = JSON.parse(block.dataset.primaries||"[]");
+    const blockClass = block.dataset.class||"";
+    let classMatch = false;
+
+    block.querySelectorAll(".spec-card").forEach(card => {
+      const cardRoles = JSON.parse(card.dataset.roles||"[]");
+      const cardPrimary = card.dataset.primary||"";
+      const cardName = card.dataset.name||"";
+
+      let roleMatch = false;
+      if (activeFilter==="all") roleMatch = true;
+      else if (["dps","tank","heal","support"].includes(activeFilter)) roleMatch = cardRoles.includes(activeFilter);
+      else if (activeFilter==="str") roleMatch = cardPrimary==="str";
+      else if (activeFilter==="agi") roleMatch = cardPrimary==="agi";
+      else if (activeFilter==="int") roleMatch = cardPrimary==="int";
+
+      const textMatch = !searchTerm || cardName.includes(searchTerm) || blockClass.includes(searchTerm);
+
+      if (roleMatch && textMatch) {
+        card.classList.remove("hidden");
+        classMatch = true;
+        specCount++;
+      } else {
+        card.classList.add("hidden");
+      }
+    });
+
+    block.classList.toggle("hidden", !classMatch);
+  });
+
+  const empty = document.getElementById("empty-state");
+  empty.style.display = specCount === 0 ? "" : "none";
+  updateResultsBar();
+}
+</script>
+</body>
+</html>
