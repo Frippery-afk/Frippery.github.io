@@ -1,0 +1,2 @@
+# Frippery.github.io
+WowStats
