@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WoW Midnight — Stat Priorities</title>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --bg:#0c0e13;--bg2:#12151c;--bg3:#181c26;
+            --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+            --text:#ddd9cf;--text2:#9c9890;--text3:#5c5a55;
+            --gold:#c8a94a;--gold3:rgba(200,169,74,0.13);
+            --crit:#e05252;--haste:#e09c38;--mastery:#38b87a;--vers:#3d8fd6;
+            --str:#d86040;--agi:#68b830;--intel:#8880e0;
+            --font-d:'Georgia',serif;--font-b:'Trebuchet MS','Segoe UI',sans-serif;
+        }
+        html{scroll-behavior:smooth}
+        body{background:var(--bg);color:var(--text);font-family:var(--font-b);line-height:1.5;min-height:100vh;padding-bottom:50px}
+        .site-header{background:linear-gradient(180deg,#080a0f 0%,var(--bg) 100%);border-bottom:1px solid var(--border2);padding:28px 20px 20px;text-align:center;position:relative;overflow:hidden}
+        .site-header::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 50% -5%,rgba(200,169,74,0.13) 0%,transparent 65%)}
+        .eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;position:relative}
+        .site-header h1{font-family:var(--font-d);font-size:clamp(20px,4vw,32px);font-weight:700;color:var(--gold);letter-spacing:1px;position:relative}
+        .site-header h1 span{color:var(--text2);font-weight:400}
+        .hline{display:flex;align-items:center;gap:12px;justify-content:center;margin-top:12px;position:relative}
+        .hline i{width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+        .hline i:last-child{transform:scaleX(-1)}
+        .hline em{font-style:normal;font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase}
+        .pbadge{display:inline-flex;align-items:center;gap:5px;background:var(--gold3);border:1px solid rgba(200,169,74,0.28);color:var(--gold);font-size:10px;padding:3px 10px;border-radius:20px;margin-top:10px;position:relative}
+        .container{max-width:1100px;margin:0 auto;padding:18px 16px 60px}
+        .frow{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px}
+        .fg{display:flex;gap:5px;flex-wrap:wrap}
+        .fsep{width:1px;background:var(--border);margin:0 4px;align-self:stretch}
+        .fbtn{font-size:11px;font-family:var(--font-b);padding:5px 13px;border-radius:20px;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
+        .fbtn:hover{border-color:var(--gold);color:var(--gold)}
+        .fbtn.active{background:var(--gold);color:#0c0e13;border-color:var(--gold);font-weight:700}
+        .legend{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:center;padding:9px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:14px}
+        .li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+        .ld{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+        .rbar{font-size:11px;color:var(--text3);text-align:right;margin-bottom:8px}
+        .cg{display:flex;flex-direction:column;gap:8px}
+        .cb{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg2)}
+        .ch{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none;transition:background .15s}
+        .ch:hover{background:rgba(255,255,255,0.02)}
+        .ci{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--font-d);flex-shrink:0;border:1px solid rgba(255,255,255,0.1)}
+        .cn{font-size:14px;font-weight:600;font-family:var(--font-d);color:var(--text);letter-spacing:.3px}
+        .cm{font-size:10px;color:var(--text3);margin-left:4px}
+        .ctags{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+        .rt{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
+        .tdps{background:rgba(224,82,82,.13);color:#e05252;border:1px solid rgba(224,82,82,.2)}
+        .ttank{background:rgba(61,143,214,.13);color:#3d8fd6;border:1px solid rgba(61,143,214,.2)}
+        .theal{background:rgba(56,184,122,.13);color:#38b87a;border:1px solid rgba(56,184,122,.2)}
+        .tsupp{background:rgba(136,128,224,.13);color:#8880e0;border:1px solid rgba(136,128,224,.2)}
+        .chev{font-size:10px;color:var(--text3);transition:transform .2s;margin-left:8px;flex-shrink:0}
+        .collapsed .sg{display:none}
+        .collapsed .chev{transform:rotate(-90deg)}
+        .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;padding:0 10px 12px}
+        .sc{border:1px solid var(--border);border-radius:8px;padding:11px 13px;background:var(--bg3);transition:border-color .15s,transform .1s}
+        .sc:hover{border-color:var(--border2);transform:translateY(-1px)}
+        .sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px}
+        .sn{font-size:12px;font-weight:600;font-family:var(--font-d);color:var(--text)}
+        .srb{font-size:9px;padding:1px 6px;border-radius:8px;margin-top:1px;flex-shrink:0}
+        .mn{font-size:9.5px;color:var(--text3);margin-bottom:8px;font-style:italic}
+        .pb{font-size:9px;padding:2px 8px;border-radius:6px;margin-bottom:9px;display:inline-block;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+        .pstr{background:rgba(216,96,64,.18);color:#e8825a;border:1px solid rgba(216,96,64,.28)}
+        .pagi{background:rgba(104,184,48,.18);color:#8ad450;border:1px solid rgba(104,184,48,.28)}
+        .pint{background:rgba(136,128,224,.18);color:#a09aee;border:1px solid rgba(136,128,224,.28)}
+        .hts{display:flex;flex-direction:column;gap:7px}
+        .ht{background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:6px;padding:7px 10px}
+        .htn{font-size:10px;font-weight:600;color:var(--gold);margin-bottom:5px;letter-spacing:.2px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+        .sl{display:flex;flex-direction:column;gap:3px}
+        .sr{display:flex;align-items:center;gap:6px}
+        .sk{width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+        .sl2{font-size:11px;min-width:58px;color:var(--text2)}
+        .sb{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06);overflow:hidden}
+        .sf{height:100%;border-radius:2px}
+        .nb{font-size:8px;background:rgba(136,128,224,.25);color:#a09aee;padding:1px 5px;border-radius:4px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-left:4px;vertical-align:middle}
+        .wl{display:inline-flex;align-items:center;gap:3px;font-size:9px;color:var(--text3);text-decoration:none;margin-top:8px;padding-top:6px;border-top:1px solid var(--border);transition:color .15s;width:100%}
+        .wl:hover{color:var(--gold)}
+        .footer{text-align:center;padding:40px 20px;font-size:11px;color:var(--text3);border-top:1px solid var(--border);margin-top:40px}
+        .footer a{color:var(--gold);text-decoration:none}
+        .es{text-align:center;padding:60px 20px;color:var(--text3);font-size:14px;display:none}
+        @media(max-width:520px){.sg{grid-template-columns:1fr}.site-header h1{font-size:18px}}
+    </style>
+</head>
+<body>
+<header class="site-header">
+    <div class="eyebrow">World of Warcraft</div>
+    <h1>Midnight <span>— Stat Priorities</span></h1>
+    <div class="hline"><i></i><em>Season 1 Reference</em><i></i></div>
+    <div class="pbadge">⚔ Patch 12.0.1 · March 2026</div>
+</header>
+
+<div class="container">
+    <div class="frow" id="filters">
+        <div class="fg">
+            <button class="fbtn active" data-f="all">All</button>
+        </div>
+        <div class="fsep"></div>
+        <div class="fg">
+            <button class="fbtn" data-f="dps">DPS</button>
+            <button class="fbtn" data-f="tank">Tank</button>
+            <button class="fbtn" data-f="heal">Healer</button>
+            <button class="fbtn" data-f="support">Support</button>
+        </div>
+        <div class="fsep"></div>
+        <div class="fg">
+            <button class="fbtn" data-f="str">Strength</button>
+            <button class="fbtn" data-f="agi">Agility</button>
+            <button class="fbtn" data-f="int">Intellect</button>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="li"><div class="ld" style="background:var(--crit)"></div>Critical Strike</div>
+        <div class="li"><div class="ld" style="background:var(--haste)"></div>Haste</div>
+        <div class="li"><div class="ld" style="background:var(--mastery)"></div>Mastery</div>
+        <div class="li"><div class="ld" style="background:var(--vers)"></div>Versatility</div>
+    </div>
+
+    <div class="rbar" id="rbar"></div>
+    <div class="cg" id="classes"></div>
+    <div class="es" id="es">No specializations match the selected filter.</div>
+</div>
+
+<footer class="footer">
+    World of Warcraft: Midnight · Dashboard v1.0.4<br>
+    Built for Github Pages & Local Execution
+</footer>
+
+<script>
+const C={
+    "Critical Strike":{c:"#e05252",s:"Crit"},
+    "Haste":{c:"#e09c38",s:"Haste"},
+    "Mastery":{c:"#38b87a",s:"Mastery"},
+    "Versatility":{c:"#3d8fd6",s:"Vers"},
+    "Strength":{c:"#d86040",s:"Str"},
+    "Agility":{c:"#68b830",s:"Agi"},
+    "Intellect":{c:"#8880e0",s:"Int"}
+};
+const RP=["#d86040","#e09c38","#38b87a","#3d8fd6","#8880e0"];
+const PC={"Strength":"pstr","Agility":"pagi","Intellect":"pint"};
+const RL={dps:"DPS",tank:"Tank",heal:"Healer",support:"Support"};
+const RC={dps:"tdps",tank:"ttank",heal:"theal",support:"tsupp"};
+
+const CLASSES=[
+{name:"Death Knight",icon:"DK",color:"#C41E3A",bg:"#3a0a10",specs:[
+    {name:"Blood",role:"Tank",pri:"Strength",roles:["tank"],mastery:"Mastery: Blood Shield",
+     trees:[
+        {name:"San'layn", stats:["Strength","Haste","Mastery","Critical Strike","Versatility"],equal:[["Mastery","Critical Strike","Versatility"]]},
+        {name:"Deathbringer", stats:["Strength","Critical Strike","Mastery","Versatility","Haste"],equal:[["Mastery","Versatility"]]}
+     ],wh:"classes/death-knight/blood/stat-priority-pve-tank"},
+    {name:"Frost",role:"DPS",pri:"Strength",roles:["dps"],mastery:"Mastery: Frozen Heart",
+     trees:[
+        {name:"Deathbringer", stats:["Strength","Critical Strike","Mastery","Haste","Versatility"]},
+        {name:"Rider of the Apocalypse", stats:["Strength","Critical Strike","Mastery","Haste","Versatility"]}
+     ],wh:"classes/death-knight/frost/stat-priority-pve-dps"}
+]},
+{name:"Demon Hunter",icon:"DH",color:"#A330C9",bg:"#2a0a38",specs:[
+    {name:"Havoc",role:"DPS",pri:"Agility",roles:["dps"],mastery:"Mastery: Demonic Presence",
+     trees:[
+        {name:"Fel-Scarred", stats:["Agility","Critical Strike","Mastery","Haste","Versatility"]},
+        {name:"Aldrachi Reaver", stats:["Agility","Critical Strike","Mastery","Haste","Versatility"]}
+     ],wh:"classes/demon-hunter/havoc/stat-priority-pve-dps"},
+    {name:"Vengeance",role:"Tank",pri:"Agility",roles:["tank"],mastery:"Mastery: Fel Blood",
+     trees:[
+        {name:"Aldrachi Reaver", stats:["Agility","Haste","Critical Strike","Versatility","Mastery"]},
+        {name:"Annihilator", stats:["Agility","Haste","Critical Strike","Versatility","Mastery"]}
+     ],wh:"classes/demon-hunter/vengeance/stat-priority-pve-tank"}
+]},
+{name:"Druid",icon:"Dr",color:"#FF7C0A",bg:"#3a1e00",specs:[
+    {name:"Balance",role:"DPS",pri:"Intellect",roles:["dps"],mastery:"Mastery: Starlight",
+     trees:[
+        {name:"Keeper of the Grove", stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]},
+        {name:"Elune's Chosen", stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]}
+     ],wh:"classes/druid/balance/stat-priority-pve-dps"},
+    {name:"Restoration",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Mastery: Harmony",
+     trees:[
+        {name:"Keeper of the Grove", stats:["Intellect","Haste","Mastery","Versatility","Critical Strike"]},
+        {name:"Wildstalker", stats:["Intellect","Haste","Mastery","Versatility","Critical Strike"]}
+     ],wh:"classes/druid/restoration/stat-priority-pve-healer"}
+]},
+{name:"Monk",icon:"Mo",color:"#00FF98",bg:"#002e18",specs:[
+    {name:"Brewmaster",role:"Tank",pri:"Agility",roles:["tank"],mastery:"Mastery: Elusive Brawler",
+     trees:[
+        {name:"Shado-Pan", st:["Agility","Versatility","Critical Strike","Mastery","Haste"], aoe:["Agility","Critical Strike","Mastery","Versatility","Haste"]},
+        {name:"Master of Harmony", st:["Agility","Versatility","Critical Strike","Mastery","Haste"], aoe:["Agility","Critical Strike","Mastery","Versatility","Haste"]}
+     ],wh:"classes/monk/brewmaster/stat-priority-pve-tank"}
+]},
+{name:"Priest",icon:"Pr",color:"#EAEAEA",bg:"#202020",specs:[
+    {name:"Holy",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Mastery: Echo of Light",
+     trees:[
+        {name:"Archon", stats:["Intellect","Critical Strike","Versatility","Mastery","Haste"],equal:[["Versatility","Mastery"]]},
+        {name:"Oracle", stats:["Intellect","Critical Strike","Versatility","Mastery","Haste"],equal:[["Versatility","Mastery"]]}
+     ],wh:"classes/priest/holy/stat-priority-pve-healer"}
+]},
+{name:"Shaman",icon:"Sh",color:"#0070DD",bg:"#001530",specs:[
+    {name:"Restoration",role:"Healer",pri:"Intellect",roles:["heal"],mastery:"Mastery: Deep Healing",
+     trees:[
+        {name:"Farseer", stats:["Intellect","Critical Strike","Mastery","Versatility","Haste"],equal:[["Versatility","Mastery"]]},
+        {name:"Totemic", stats:["Intellect","Critical Strike","Mastery","Versatility","Haste"],equal:[["Versatility","Mastery"]]}
+     ],wh:"classes/shaman/restoration/stat-priority-pve-healer"}
+]}
+];
+
+function buildStatRows(stats, equal){
+    if(!stats) return "";
+    const sec=stats.slice(1), n=sec.length;
+    const pct=sec.map((_,i)=>Math.round(100-i*70/(n-1)));
+    const eq=equal||[];
+    const done=new Set();
+    let rows="";
+    sec.forEach((s,i)=>{
+        if(done.has(s))return;
+        let grp=null;
+        for(const g of eq){if(g.includes(s)){grp=g;break;}}
+        const rc=RP[i]||RP[4];
+        if(grp){
+            const label=grp.map(g=>C[g]?.s||g).join(" = ");
+            const col=C[grp[0]]?.c||"#888";
+            rows+=`<div class="sr"><div class="sk" style="background:${rc}1e;color:${rc};border:1px solid ${rc}38">${i+1}</div><span class="sl2" style="font-size:10px">${label}</span><div class="sb"><div class="sf" style="width:${pct[i]}%;background:${col}"></div></div></div>`;
+            grp.forEach(g=>done.add(g));
+        }else{
+            const col=C[s]?.c||"#888";
+            rows+=`<div class="sr"><div class="sk" style="background:${rc}1e;color:${rc};border:1px solid ${rc}38">${i+1}</div><span class="sl2">${C[s]?.s||s}</span><div class="sb"><div class="sf" style="width:${pct[i]}%;background:${col}"></div></div></div>`;
+            done.add(s);
+        }
+    });
+    return rows;
+}
+
+function buildTree(t){
+    if(t.st && t.aoe){
+        return `<div class="ht"><div class="htn">${t.name}</div><div class="sl">${buildStatRows(t.st)}</div></div>`;
+    }
+    return `<div class="ht"><div class="htn">${t.name}</div><div class="sl">${buildStatRows(t.stats, t.equal)}</div></div>`;
+}
+
+function buildSpec(sp){
+    return `<div class="sc" data-roles='${JSON.stringify(sp.roles)}' data-pri='${sp.pri.toLowerCase().slice(0,3)}'>
+        <div class="sh"><div class="sn">${sp.name}</div><span class="rt srb ${RC[sp.roles[0]]}">${RL[sp.roles[0]]}</span></div>
+        <div class="mn">${sp.mastery}</div>
+        <span class="pb ${PC[sp.pri]}">${sp.pri}</span>
+        <div class="hts">${sp.trees.map(buildTree).join("")}</div>
+    </div>`;
+}
+
+function buildClass(cl){
+    return `<div class="cb">
+        <div class="ch" onclick="tog(this)">
+            <div class="ci" style="background:${cl.bg};color:${cl.color}">${cl.icon}</div>
+            <span class="cn">${cl.name}</span>
+            <span class="chev">▾</span>
+        </div>
+        <div class="sg">${cl.specs.map(buildSpec).join("")}</div>
+    </div>`;
+}
+
+document.getElementById("classes").innerHTML=CLASSES.map(buildClass).join("");
+
+function tog(h){h.closest(".cb").classList.toggle("collapsed")}
+
+document.getElementById("filters").addEventListener("click",function(e){
+    const b=e.target.closest(".fbtn");
+    if(!b)return;
+    document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    const af=b.getAttribute("data-f");
+    
+    let n=0;
+    document.querySelectorAll(".cb").forEach(bl=>{
+        let v=0;
+        bl.querySelectorAll(".sc").forEach(c=>{
+            const r=JSON.parse(c.getAttribute("data-roles")), p=c.getAttribute("data-pri");
+            const m=(af==="all")||(af==="dps"&&r.includes("dps"))||(af==="tank"&&r.includes("tank"))||(af==="heal"&&r.includes("heal"))||(af==="str"&&p==="str")||(af==="agi"&&p==="agi")||(af==="int"&&p==="int");
+            c.style.display=m?"":"none";
+            if(m)v++;
+        });
+        bl.style.display=v>0?"":"none";
+        if(v>0&&af!=="all") bl.classList.remove("collapsed");
+        n+=v;
+    });
+    document.getElementById("es").style.display=n===0?"block":"none";
+    document.getElementById("rbar").textContent=`Showing ${n} specializations`;
+});
+</script>
+</body>
+</html>
