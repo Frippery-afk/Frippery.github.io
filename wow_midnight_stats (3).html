@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WoW Midnight — Stat Priorities</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0e13;--bg2:#12151c;--bg3:#181c26;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#ddd9cf;--text2:#9c9890;--text3:#5c5a55;
+  --gold:#c8a94a;--gold3:rgba(200,169,74,0.13);
+  --crit:#e05252;--haste:#e09c38;--mastery:#38b87a;--vers:#3d8fd6;
+  --str:#d86040;--agi:#68b830;--intel:#8880e0;
+  --font-display:'Georgia',serif;--font-body:'Trebuchet MS','Segoe UI',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.5;min-height:100vh}
+
+.site-header{background:linear-gradient(180deg,#080a0f 0%,var(--bg) 100%);border-bottom:1px solid var(--border2);padding:28px 20px 20px;text-align:center;position:relative;overflow:hidden}
+.site-header::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 50% -5%,rgba(200,169,74,0.13) 0%,transparent 65%)}
+.header-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;position:relative}
+.site-header h1{font-family:var(--font-display);font-size:clamp(20px,4vw,32px);font-weight:700;color:var(--gold);letter-spacing:1px;position:relative}
+.site-header h1 span{color:var(--text2);font-weight:400}
+.header-rule{display:flex;align-items:center;gap:12px;justify-content:center;margin-top:12px;position:relative}
+.header-rule i{width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.header-rule i:last-child{transform:scaleX(-1)}
+.header-rule em{font-style:normal;font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase}
+.patch-badge{display:inline-flex;align-items:center;gap:5px;background:var(--gold3);border:1px solid rgba(200,169,74,0.28);color:var(--gold);font-size:10px;padding:3px 10px;border-radius:20px;margin-top:10px;position:relative}
+
+.container{max-width:1100px;margin:0 auto;padding:18px 16px 60px}
+
+.filter-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px}
+.filter-group{display:flex;gap:5px;flex-wrap:wrap}
+.filter-sep{width:1px;background:var(--border);margin:0 4px;align-self:stretch}
+.filter-btn{font-size:11px;font-family:var(--font-body);padding:5px 13px;border-radius:20px;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.filter-btn:hover{border-color:var(--gold);color:var(--gold)}
+.filter-btn.active{background:var(--gold);color:#0c0e13;border-color:var(--gold);font-weight:700}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:center;padding:9px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:14px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+.results-bar{font-size:11px;color:var(--text3);text-align:right;margin-bottom:8px}
+
+.classes-grid{display:flex;flex-direction:column;gap:8px}
+.class-block{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg2)}
+.class-block:hover{border-color:var(--border2)}
+.class-header{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none;transition:background .15s}
+.class-header:hover{background:rgba(255,255,255,0.02)}
+.class-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--font-display);flex-shrink:0;border:1px solid rgba(255,255,255,0.1)}
+.class-name{font-size:14px;font-weight:600;font-family:var(--font-display);color:var(--text);letter-spacing:.3px}
+.class-meta{font-size:10px;color:var(--text3);margin-left:4px}
+.class-tags{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.role-tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
+.tag-dps{background:rgba(224,82,82,.13);color:#e05252;border:1px solid rgba(224,82,82,.2)}
+.tag-tank{background:rgba(61,143,214,.13);color:#3d8fd6;border:1px solid rgba(61,143,214,.2)}
+.tag-heal{background:rgba(56,184,122,.13);color:#38b87a;border:1px solid rgba(56,184,122,.2)}
+.tag-support{background:rgba(136,128,224,.13);color:#8880e0;border:1px solid rgba(136,128,224,.2)}
+.chevron{font-size:10px;color:var(--text3);transition:transform .2s;margin-left:8px;flex-shrink:0}
+.collapsed .chevron{transform:rotate(-90deg)}
+.collapsed .specs-grid{display:none}
+
+.specs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;padding:0 10px 12px}
+
+.spec-card{border:1px solid var(--border);border-radius:8px;padding:11px 13px;background:var(--bg3);transition:border-color .15s,transform .1s}
+.spec-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.spec-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px}
+.spec-name{font-size:12px;font-weight:600;font-family:var(--font-display);color:var(--text)}
+.spec-role-badge{font-size:9px;padding:1px 6px;border-radius:8px;margin-top:1px;flex-shrink:0}
+.mastery-name{font-size:9.5px;color:var(--text3);margin-bottom:8px;font-style:italic}
+.primary-badge{font-size:9px;padding:2px 8px;border-radius:6px;margin-bottom:9px;display:inline-block;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.p-str{background:rgba(216,96,64,.18);color:#e8825a;border:1px solid rgba(216,96,64,.28)}
+.p-agi{background:rgba(104,184,48,.18);color:#8ad450;border:1px solid rgba(104,184,48,.28)}
+.p-int{background:rgba(136,128,224,.18);color:#a09aee;border:1px solid rgba(136,128,224,.28)}
+
+.hero-trees{display:flex;flex-direction:column;gap:7px}
+.hero-tree{background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:6px;padding:7px 10px}
+.hero-tree-name{font-size:10px;font-weight:600;color:var(--gold);margin-bottom:5px;letter-spacing:.2px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.stat-list{display:flex;flex-direction:column;gap:3px}
+.stat-row{display:flex;align-items:center;gap:6px}
+.stat-rank{width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.stat-label{font-size:11px;min-width:58px;color:var(--text2)}
+.stat-bar{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06);overflow:hidden}
+.stat-fill{height:100%;border-radius:2px}
+
+.new-badge{font-size:8px;background:rgba(136,128,224,.25);color:#a09aee;padding:1px 5px;border-radius:4px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-left:4px;vertical-align:middle}
+
+.wh-link{display:inline-flex;align-items:center;gap:3px;font-size:9px;color:var(--text3);text-decoration:none;margin-top:8px;padding-top:6px;border-top:1px solid var(--border);transition:color .15s;width:100%}
+.wh-link:hover{color:var(--gold)}
+.wh-link::before{content:'↗';font-size:10px}
+
+.site-footer{text-align:center;padding:20px;font-size:11px;color:var(--text3);border-top:1px solid var(--border);margin-top:10px;line-height:1.8}
+.site-footer a{color:var(--gold);text-decoration:none}
+.site-footer a:hover{text-decoration:underline}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3);font-size:14px;display:none}
+
+@media(max-width:520px){.specs-grid{grid-template-columns:1fr 1fr}.site-header h1{font-size:18px}}
+@media(max-width:360px){.specs-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-eyebrow">World of Warcraft</div>
+  <h1>Midnight <span>— Stat Priorities</span></h1>
+  <div class="header-rule"><i></i><em>wowhead.com</em><i></i></div>
+  <div style="margin-top:10px;position:relative">
+    <span class="patch-badge">⚔ Patch 12.0.1 · March 2026</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="filter-row" id="filters">
+    <div class="filter-group">
+      <button class="filter-btn active" data-filter="all">All</button>
+    </div>
+    <div class="filter-sep"></div>
+    <div class="filter-group">
+      <button class="filter-btn" data-filter="dps">DPS</button>
+      <button class="filter-btn" data-filter="tank">Tank</button>
+      <button class="filter-btn" data-filter="heal">Healer</button>
+      <button class="filter-btn" data-filter="support">Support</button>
+    </div>
+    <div class="filter-sep"></div>
+    <div class="filter-group">
+      <button class="filter-btn" data-filter="str">Strength</button>
+      <button class="filter-btn" data-filter="agi">Agility</button>
+      <button class="filter-btn" data-filter="int">Intellect</button>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--crit)"></div>Critical Strike</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--haste)"></div>Haste</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--mastery)"></div>Mastery</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--vers)"></div>Versatility</div>
+    <div class="legend-item" style="border-left:1px solid var(--border);padding-left:14px"><div class="legend-dot" style="background:var(--str)"></div>Strength</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--agi)"></div>Agility</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--intel)"></div>Intellect</div>
+  </div>
+
+  <div class="results-bar" id="results-bar"></div>
+  <div class="classes-grid" id="classes"></div>
+  <div class="empty-state" id="empty-state">No specializations match the selected filter.</div>
+
+</div>
+
+<footer class="site-footer">
+  Data sourced from <a href="https://www.wowhead.com/guide/classes" target="_blank">Wowhead Class Guides</a> · Patch 12.0.1 · World of Warcraft: Midnight
+</footer>
+
+<script>
+const SC = {
+  "Critical Strike":{color:"#e05252",short:"Crit"},
+  "Haste":{color:"#e09c38",short:"Haste"},
+  "Mastery":{color:"#38b87a",short:"Mastery"},
+  "Versatility":{color:"#3d8fd6",short:"Vers"},
+  "Strength":{color:"#d86040",short:"Str"},
+  "Agility":{color:"#68b830",short:"Agi"},
+  "Intellect":{color:"#8880e0",short:"Int"}
+};
+const RANK_PAL = ["#d86040","#e09c38","#38b87a","#3d8fd6","#8880e0"];
+const PC  = {"Strength":"p-str","Agility":"p-agi","Intellect":"p-int"};
+const RL  = {dps:"DPS",tank:"Tank",heal:"Healer",support:"Support"};
+const RC  = {dps:"tag-dps",tank:"tag-tank",heal:"tag-heal",support:"tag-support"};
+
+// ── DATA ─────────────────────────────────────────────────────
+// trees[].stats : [primary, ...secondaries in priority order]
+// trees[].equal : [[statA,statB,...]] groups of equal-priority stats
+const CLASSES = [
+
+  {name:"Death Knight",icon:"DK",color:"#C41E3A",iconBg:"#3a0a10",specs:[
+    {name:"Blood",role:"Tank",primary:"Strength",roles:["tank"],masteryName:"Mastery: Blood Shield",
+     trees:[
+      {name:"San'layn",       stats:["Strength","Haste","Mastery","Critical Strike","Versatility"],equal:[["Mastery","Critical Strike","Versatility"]]},
+      {name:"Deathbringer",   stats:["Strength","Critical Strike","Mastery","Versatility","Haste"],  equal:[["Mastery","Versatility"]]}
+     ],wh:"classes/death-knight/blood/stat-priority-pve-tank"},
+    {name:"Frost",role:"DPS",primary:"Strength",roles:["dps"],masteryName:"Mastery: Frozen Heart",
+     trees:[
+      {name:"Deathbringer",            stats:["Strength","Critical Strike","Mastery","Haste","Versatility"]},
+      {name:"Rider of the Apocalypse", stats:["Strength","Critical Strike","Mastery","Haste","Versatility"]}
+     ],wh:"classes/death-knight/frost/stat-priority-pve-dps"},
+    {name:"Unholy",role:"DPS",primary:"Strength",roles:["dps"],masteryName:"Mastery: Dreadblade",
+     trees:[
+      {name:"San'layn",                stats:["Strength","Mastery","Critical Strike","Haste","Versatility"]},
+      {name:"Rider of the Apocalypse", stats:["Strength","Mastery","Critical Strike","Haste","Versatility"]}
+     ],wh:"classes/death-knight/unholy/stat-priority-pve-dps"}
+  ]},
+
+  {name:"Demon Hunter",icon:"DH",color:"#A330C9",iconBg:"#2a0a38",specs:[
+    {name:"Havoc",role:"DPS",primary:"Agility",roles:["dps"],masteryName:"Mastery: Demonic Presence",
+     trees:[
+      {name:"Fel-Scarred",    stats:["Agility","Critical Strike","Mastery","Haste","Versatility"]},
+      {name:"Aldrachi Reaver",stats:["Agility","Critical Strike","Mastery","Haste","Versatility"]}
+     ],wh:"classes/demon-hunter/havoc/stat-priority-pve-dps"},
+    {name:"Vengeance",role:"Tank",primary:"Agility",roles:["tank"],masteryName:"Mastery: Fel Blood",
+     trees:[
+      {name:"Aldrachi Reaver",stats:["Agility","Haste","Critical Strike","Mastery","Versatility"]},
+      {name:"Fiery Demise",   stats:["Agility","Haste","Critical Strike","Mastery","Versatility"]}
+     ],wh:"classes/demon-hunter/vengeance/stat-priority-pve-tank"},
+    {name:"Devourer",role:"DPS",primary:"Intellect",roles:["dps"],masteryName:"Mastery: Monster Within",newSpec:true,
+     trees:[
+      {name:"Annihilator",    stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]},
+      {name:"Void-Scarred",   stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]}
+     ],wh:"classes/demon-hunter/devourer/stat-priority-pve-dps"}
+  ]},
+
+  {name:"Druid",icon:"Dr",color:"#FF7C0A",iconBg:"#3a1e00",specs:[
+    {name:"Balance",role:"DPS",primary:"Intellect",roles:["dps"],masteryName:"Mastery: Starlight",
+     trees:[
+      {name:"Keeper of the Grove",stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]},
+      {name:"Elune's Chosen",     stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]}
+     ],wh:"classes/druid/balance/stat-priority-pve-dps"},
+    {name:"Feral",role:"DPS",primary:"Agility",roles:["dps"],masteryName:"Mastery: Razor Claws",
+     trees:[
+      {name:"Druid of the Claw",  stats:["Agility","Mastery","Haste","Critical Strike","Versatility"]},
+      {name:"Wildstalker",        stats:["Agility","Mastery","Critical Strike","Haste","Versatility"]}
+     ],wh:"classes/druid/feral/stat-priority-pve-dps"},
+    {name:"Guardian",role:"Tank",primary:"Agility",roles:["tank"],masteryName:"Mastery: Nature's Guardian",
+     trees:[
+      {name:"Druid of the Claw",  stats:["Agility","Haste","Critical Strike","Versatility","Mastery"]},
+      {name:"Elune's Chosen",     stats:["Agility","Haste","Critical Strike","Versatility","Mastery"]}
+     ],wh:"classes/druid/guardian/stat-priority-pve-tank"},
+    {name:"Restoration",role:"Healer",primary:"Intellect",roles:["heal"],masteryName:"Mastery: Harmony",
+     trees:[
+      {name:"Keeper of the Grove",stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]},
+      {name:"Wildstalker",        stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]}
+     ],wh:"classes/druid/restoration/stat-priority-pve-healer"}
+  ]},
+
+  {name:"Evoker",icon:"Ev",color:"#33937F",iconBg:"#082820",specs:[
+    {name:"Devastation",role:"DPS",primary:"Intellect",roles:["dps"],masteryName:"Mastery: Giantkiller",
+     trees:[
+      {name:"Flameshaper",    stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]},
+      {name:"Scalecommander", stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]}
+     ],wh:"classes/evoker/devastation/stat-priority-pve-dps"},
+    {name:"Preservation",role:"Healer",primary:"Intellect",roles:["heal"],masteryName:"Mastery: Life-Binder",
+     trees:[
+      {name:"Chronowarden",   stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]},
+      {name:"Flameshaper",    stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]}
+     ],wh:"classes/evoker/preservation/stat-priority-pve-healer"},
+    {name:"Augmentation",role:"Support",primary:"Intellect",roles:["support"],masteryName:"Mastery: Timewalker",
+     trees:[
+      {name:"Chronowarden",   stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"]},
+      {name:"Scalecommander", stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]}
+     ],wh:"classes/evoker/augmentation/stat-priority-pve-dps"}
+  ]},
+
+  {name:"Hunter",icon:"Hu",color:"#AAD372",iconBg:"#1a2e08",specs:[
+    {name:"Beast Mastery",role:"DPS",primary:"Agility",roles:["dps"],masteryName:"Mastery: Master of Beasts",
+     trees:[
+      {name:"Pack Leader",    stats:["Agility","Mastery","Haste","Critical Strike","Versatility"]},
+      {name:"Lone Wolf",      stats:["Agility","Mastery","Haste","Critical Strike","Versatility"]}
+     ],wh:"classes/hunter/beast-mastery/stat-priority-pve-dps"},
+    {name:"Marksmanship",role:"DPS",primary:"Agility",roles:["dps"],masteryName:"Mastery: Sniper Training",
+     trees:[
+      {name:"Dark Ranger",    stats:["Agility","Critical Strike","Mastery","Haste","Versatility"]},
+      {name:"Lone Wolf",      stats:["Agility","Critical Strike","Mastery","Haste","Versatility"]}
+     ],wh:"classes/hunter/marksmanship/stat-priority-pve-dps"},
+    {name:"Survival",role:"DPS",primary:"Agility",roles:["dps"],masteryName:"Mastery: Spirit Bond",
+     trees:[
+      {name:"Pack Leader",    stats:["Agility","Mastery","Haste","Critical Strike","Versatility"]},
+      {name:"Sentinel",       stats:["Agility","Mastery","Haste","Critical Strike","Versatility"]}
+     ],wh:"classes/hunter/survival/stat-priority-pve-dps"}
+  ]},
+
+  {name:"Mage",icon:"Ma",color:"#3FC7EB",iconBg:"#051e2a",specs:[
+    {name:"Arcane",role:"DPS",primary:"Intellect",roles:["dps"],masteryName:"Mastery: Savant",
+     trees:[
+      {name:"Spellslinger",   stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]},
+      {name:"Sunfury",        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]}
+     ],wh:"classes/mage/arcane/stat-priority-pve-dps"},
+    {name:"Fire",role:"DPS",primary:"Intellect",roles:["dps"],masteryName:"Mastery: Ignite",
+     trees:[
+      {name:"Sunfury",        stats:["Intellect","Critical Strike","Mastery","Haste","Versatility"]},
+      {name:"Frostfire",      stats:["Intellect","Critical Strike","Mastery","Haste","Versatility"]}
+     ],wh:"classes/mage/fire/stat-priority-pve-dps"},
+    {name:"Frost",role:"DPS",primary:"Intellect",roles:["dps"],masteryName:"Mastery: Freeze & Shatter",
+     trees:[
+      {name:"Frostfire",      stats:["Intellect","Mastery","Critical Strike","Haste","Versatility"]},
+      {name:"Spellslinger",   stats:["Intellect","Mastery","Critical Strike","Haste","Versatility"]}
+     ],wh:"classes/mage/frost/stat-priority-pve-dps"}
+  ]},
+
+  {name:"Monk",icon:"Mo",color:"#00FF98",iconBg:"#002e18",specs:[
+    {name:"Brewmaster",role:"Tank",primary:"Agility",roles:["tank"],masteryName:"Mastery: Elusive Brawler",
+     trees:[
+      {name:"Shado-Pan",           stats:["Agility","Haste","Versatility","Critical Strike","Mastery"]},
+      {name:"Master of Harmony",   stats:["Agility","Haste","Versatility","Critical Strike","Mastery"]}
+     ],wh:"classes/monk/brewmaster/stat-priority-pve-tank"},
+    {name:"Mistweaver",role:"Healer",primary:"Intellect",roles:["heal"],masteryName:"Mastery: Gust of Mists",
+     trees:[
+      {name:"Jade Bond",           stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]},
+      {name:"Master of Harmony",   stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]}
+     ],wh:"classes/monk/mistweaver/stat-priority-pve-healer"},
+    {name:"Windwalker",role:"DPS",primary:"Agility",roles:["dps"],masteryName:"Mastery: Combo Strikes",
+     trees:[
+      {name:"Shado-Pan",                 stats:["Agility","Haste","Critical Strike","Mastery","Versatility"]},
+      {name:"Conduit of the Celestials", stats:["Agility","Versatility","Critical Strike","Haste","Mastery"]}
+     ],wh:"classes/monk/windwalker/stat-priority-pve-dps"}
+  ]},
+
+  {name:"Paladin",icon:"Pa",color:"#F48CBA",iconBg:"#38101e",specs:[
+    {name:"Holy",role:"Healer",primary:"Intellect",roles:["heal"],masteryName:"Mastery: Lightbringer",
+     trees:[
+      {name:"Herald of the Sun",  stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]},
+      {name:"Lightsmith",         stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]}
+     ],wh:"classes/paladin/holy/stat-priority-pve-healer"},
+    {name:"Protection",role:"Tank",primary:"Strength",roles:["tank"],masteryName:"Mastery: Divine Bulwark",
+     trees:[
+      {name:"Herald of the Sun",  stats:["Strength","Haste","Critical Strike","Versatility","Mastery"]},
+      {name:"Lightsmith",         stats:["Strength","Haste","Critical Strike","Versatility","Mastery"]}
+     ],wh:"classes/paladin/protection/stat-priority-pve-tank"},
+    {name:"Retribution",role:"DPS",primary:"Strength",roles:["dps"],masteryName:"Mastery: Hand of Light",
+     trees:[
+      {name:"Herald of the Sun",  stats:["Strength","Mastery","Critical Strike","Haste","Versatility"]},
+      {name:"Templar",            stats:["Strength","Mastery","Critical Strike","Haste","Versatility"]}
+     ],wh:"classes/paladin/retribution/stat-priority-pve-dps"}
+  ]},
+
+  {name:"Priest",icon:"Pr",color:"#EAEAEA",iconBg:"#202020",specs:[
+    {name:"Discipline",role:"Healer",primary:"Intellect",roles:["heal"],masteryName:"Mastery: Grace",
+     trees:[
+      {name:"Voidweaver",  stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"]},
+      {name:"Oracle",      stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"]}
+     ],wh:"classes/priest/discipline/stat-priority-pve-healer"},
+    {name:"Holy",role:"Healer",primary:"Intellect",roles:["heal"],masteryName:"Mastery: Echo of Light",
+     trees:[
+      {name:"Archon",      stats:["Intellect","Critical Strike","Mastery","Versatility","Haste"]},
+      {name:"Oracle",      stats:["Intellect","Critical Strike","Mastery","Versatility","Haste"]}
+     ],wh:"classes/priest/holy/stat-priority-pve-healer"},
+    {name:"Shadow",role:"DPS",primary:"Intellect",roles:["dps"],masteryName:"Mastery: Shadow Weaving",
+     trees:[
+      {name:"Voidweaver",  stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]},
+      {name:"Archon",      stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]}
+     ],wh:"classes/priest/shadow/stat-priority-pve-dps"}
+  ]},
+
+  {name:"Rogue",icon:"Ro",color:"#FFF468",iconBg:"#2a2800",specs:[
+    {name:"Assassination",role:"DPS",primary:"Agility",roles:["dps"],masteryName:"Mastery: Potent Assassin",
+     trees:[
+      {name:"Deathstalker",stats:["Agility","Mastery","Critical Strike","Haste","Versatility"]},
+      {name:"Fatebound",   stats:["Agility","Mastery","Critical Strike","Haste","Versatility"]}
+     ],wh:"classes/rogue/assassination/stat-priority-pve-dps"},
+    {name:"Outlaw",role:"DPS",primary:"Agility",roles:["dps"],masteryName:"Mastery: Main Gauche",
+     trees:[
+      {name:"Fatebound",   stats:["Agility","Versatility","Critical Strike","Haste","Mastery"]},
+      {name:"Trickster",   stats:["Agility","Versatility","Critical Strike","Haste","Mastery"]}
+     ],wh:"classes/rogue/outlaw/stat-priority-pve-dps"},
+    {name:"Subtlety",role:"DPS",primary:"Agility",roles:["dps"],masteryName:"Mastery: Executioner",
+     trees:[
+      {name:"Deathstalker",stats:["Agility","Mastery","Critical Strike","Haste","Versatility"]},
+      {name:"Trickster",   stats:["Agility","Mastery","Critical Strike","Haste","Versatility"]}
+     ],wh:"classes/rogue/subtlety/stat-priority-pve-dps"}
+  ]},
+
+  {name:"Shaman",icon:"Sh",color:"#0070DD",iconBg:"#001530",specs:[
+    {name:"Elemental",role:"DPS",primary:"Intellect",roles:["dps"],masteryName:"Mastery: Elemental Overload",
+     trees:[
+      {name:"Farseer",      stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]},
+      {name:"Stormbringer", stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]}
+     ],wh:"classes/shaman/elemental/stat-priority-pve-dps"},
+    {name:"Enhancement",role:"DPS",primary:"Agility",roles:["dps"],masteryName:"Mastery: Enhanced Elements",
+     trees:[
+      {name:"Farseer",      stats:["Agility","Haste","Mastery","Critical Strike","Versatility"]},
+      {name:"Totemic",      stats:["Agility","Haste","Mastery","Critical Strike","Versatility"]}
+     ],wh:"classes/shaman/enhancement/stat-priority-pve-dps"},
+    {name:"Restoration",role:"Healer",primary:"Intellect",roles:["heal"],masteryName:"Mastery: Deep Healing",
+     trees:[
+      {name:"Farseer",      stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]},
+      {name:"Totemic",      stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"]}
+     ],wh:"classes/shaman/restoration/stat-priority-pve-healer"}
+  ]},
+
+  {name:"Warlock",icon:"Wl",color:"#8788EE",iconBg:"#0d0d2e",specs:[
+    {name:"Affliction",role:"DPS",primary:"Intellect",roles:["dps"],masteryName:"Mastery: Potent Afflictions",
+     trees:[
+      {name:"Soul Harvester",stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]},
+      {name:"Hellcaller",    stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"]}
+     ],wh:"classes/warlock/affliction/stat-priority-pve-dps"},
+    {name:"Demonology",role:"DPS",primary:"Intellect",roles:["dps"],masteryName:"Mastery: Master Demonologist",
+     trees:[
+      {name:"Diabolist",     stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]},
+      {name:"Soul Harvester",stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]}
+     ],wh:"classes/warlock/demonology/stat-priority-pve-dps"},
+    {name:"Destruction",role:"DPS",primary:"Intellect",roles:["dps"],masteryName:"Mastery: Chaotic Energies",
+     trees:[
+      {name:"Diabolist",     stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]},
+      {name:"Hellcaller",    stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"]}
+     ],wh:"classes/warlock/destruction/stat-priority-pve-dps"}
+  ]},
+
+  {name:"Warrior",icon:"Wa",color:"#C69B3A",iconBg:"#2a1e00",specs:[
+    {name:"Arms",role:"DPS",primary:"Strength",roles:["dps"],masteryName:"Mastery: Deep Wounds",
+     trees:[
+      {name:"Colossus",      stats:["Strength","Critical Strike","Haste","Mastery","Versatility"]},
+      {name:"Slayer",        stats:["Strength","Critical Strike","Haste","Mastery","Versatility"]}
+     ],wh:"classes/warrior/arms/stat-priority-pve-dps"},
+    {name:"Fury",role:"DPS",primary:"Strength",roles:["dps"],masteryName:"Mastery: Unshackled Fury",
+     trees:[
+      {name:"Slayer",        stats:["Strength","Haste","Critical Strike","Versatility","Mastery"]},
+      {name:"Mountain Thane",stats:["Strength","Haste","Critical Strike","Versatility","Mastery"]}
+     ],wh:"classes/warrior/fury/stat-priority-pve-dps"},
+    {name:"Protection",role:"Tank",primary:"Strength",roles:["tank"],masteryName:"Mastery: Critical Block",
+     trees:[
+      {name:"Colossus",      stats:["Strength","Haste","Versatility","Critical Strike","Mastery"]},
+      {name:"Thunderlord",   stats:["Strength","Haste","Versatility","Critical Strike","Mastery"]}
+     ],wh:"classes/warrior/protection/stat-priority-pve-tank"}
+  ]}
+
+];
+
+// ── RENDER ───────────────────────────────────────────────────
+function buildTree(tree) {
+  const secs = tree.stats.slice(1);
+  const total = secs.length;
+  const pcts = secs.map((_,i) => Math.round(100 - i * 70 / (total-1)));
+  const equal = tree.equal || [];
+  const rendered = new Set();
+  let rows = "";
+  secs.forEach((s,i) => {
+    if (rendered.has(s)) return;
+    let grp = null;
+    for (const g of equal) { if (g.includes(s)) { grp = g; break; } }
+    const rankColor = RANK_PAL[i] || RANK_PAL[4];
+    if (grp) {
+      const label = grp.map(g => SC[g]?.short||g).join(" = ");
+      const col = SC[grp[0]]?.color||"#888";
+      rows += `<div class="stat-row">
+        <div class="stat-rank" style="background:${rankColor}1e;color:${rankColor};border:1px solid ${rankColor}38">${i+1}</div>
+        <span class="stat-label" style="font-size:10px">${label}</span>
+        <div class="stat-bar"><div class="stat-fill" style="width:${pcts[i]}%;background:${col}"></div></div>
+      </div>`;
+      grp.forEach(g => rendered.add(g));
+    } else {
+      const col = SC[s]?.color||"#888";
+      rows += `<div class="stat-row">
+        <div class="stat-rank" style="background:${rankColor}1e;color:${rankColor};border:1px solid ${rankColor}38">${i+1}</div>
+        <span class="stat-label">${SC[s]?.short||s}</span>
+        <div class="stat-bar"><div class="stat-fill" style="width:${pcts[i]}%;background:${col}"></div></div>
+      </div>`;
+      rendered.add(s);
+    }
+  });
+  return `<div class="hero-tree">
+    <div class="hero-tree-name">${tree.name}</div>
+    <div class="stat-list">${rows}</div>
+  </div>`;
+}
+
+function buildSpec(spec) {
+  const nb = spec.newSpec ? `<span class="new-badge">new</span>` : "";
+  return `<div class="spec-card" data-roles='${JSON.stringify(spec.roles)}' data-primary='${spec.primary.toLowerCase().slice(0,3)}'>
+    <div class="spec-header">
+      <div class="spec-name">${spec.name}${nb}</div>
+      <span class="role-tag spec-role-badge ${RC[spec.roles[0]]}">${RL[spec.roles[0]]}</span>
+    </div>
+    <div class="mastery-name">${spec.masteryName}</div>
+    <span class="primary-badge ${PC[spec.primary]}">${spec.primary}</span>
+    <div class="hero-trees">${spec.trees.map(buildTree).join("")}</div>
+    <a class="wh-link" href="https://www.wowhead.com/guide/${spec.wh}" target="_blank">wowhead.com stat priority guide</a>
+  </div>`;
+}
+
+function buildClass(cls) {
+  const allRoles = [...new Set(cls.specs.flatMap(s=>s.roles))];
+  const primaries = [...new Set(cls.specs.map(s=>s.primary.toLowerCase().slice(0,3)))];
+  const roleTags = allRoles.map(r=>`<span class="role-tag ${RC[r]}">${RL[r]}</span>`).join("");
+  return `<div class="class-block" data-roles='${JSON.stringify(allRoles)}' data-primaries='${JSON.stringify(primaries)}' data-class='${cls.name.toLowerCase()}'>
+    <div class="class-header" onclick="toggleClass(this)">
+      <div class="class-icon" style="background:${cls.iconBg};color:${cls.color};border-color:${cls.color}30">${cls.icon}</div>
+      <span class="class-name">${cls.name}</span>
+      <span class="class-meta">${cls.specs.length} specs</span>
+      <div class="class-tags">${roleTags}</div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="specs-grid">${cls.specs.map(buildSpec).join("")}</div>
+  </div>`;
+}
+
+document.getElementById("classes").innerHTML = CLASSES.map(buildClass).join("");
+
+function updateBar() {
+  const cards = document.querySelectorAll(".spec-card");
+  let vis = 0;
+  cards.forEach(c => { if (c.style.display !== "none") vis++; });
+  document.getElementById("results-bar").textContent =
+    vis === cards.length ? `Showing all ${cards.length} specializations` : `Showing ${vis} of ${cards.length} specializations`;
+}
+updateBar();
+
+function toggleClass(h) { h.closest(".class-block").classList.toggle("collapsed"); }
+
+let activeFilter = "all";
+document.getElementById("filters").addEventListener("click", function(e) {
+  const btn = e.target.closest(".filter-btn");
+  if (!btn) return;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  activeFilter = btn.getAttribute("data-filter");
+  applyFilters();
+});
+
+function applyFilters() {
+  let count = 0;
+  document.querySelectorAll(".class-block").forEach(function(block) {
+    let blockVis = 0;
+    block.querySelectorAll(".spec-card").forEach(function(card) {
+      const roles   = JSON.parse(card.getAttribute("data-roles")||"[]");
+      const primary = card.getAttribute("data-primary")||"";
+      let match =
+        activeFilter==="all"     ? true :
+        activeFilter==="dps"     ? roles.indexOf("dps")>-1 :
+        activeFilter==="tank"    ? roles.indexOf("tank")>-1 :
+        activeFilter==="heal"    ? roles.indexOf("heal")>-1 :
+        activeFilter==="support" ? roles.indexOf("support")>-1 :
+        activeFilter==="str"     ? primary==="str" :
+        activeFilter==="agi"     ? primary==="agi" :
+        activeFilter==="int"     ? primary==="int" : false;
+      card.style.display = match ? "" : "none";
+      if (match) { blockVis++; count++; }
+    });
+    block.style.display = blockVis > 0 ? "" : "none";
+    if (blockVis > 0 && activeFilter !== "all") block.classList.remove("collapsed");
+  });
+  document.getElementById("empty-state").style.display = count===0 ? "" : "none";
+  updateBar();
+}
+</script>
+</body>
+</html>
