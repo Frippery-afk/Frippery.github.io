@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WoW Midnight — Stat Priorities</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13161d;
+    --bg3: #1a1e28;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8e6df;
+    --text2: #9a9790;
+    --text3: #5e5c57;
+    --accent: #c69b3a;
+    --font: 'Georgia', 'Times New Roman', serif;
+    --sans: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    background: linear-gradient(180deg, #0a0b10 0%, #0d0f14 100%);
+    border-bottom: 1px solid var(--border2);
+    padding: 28px 24px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(198,155,58,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .site-header h1 {
+    font-family: var(--font);
+    font-size: clamp(18px, 4vw, 28px);
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    position: relative;
+  }
+  .site-header p {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 6px;
+    letter-spacing: .5px;
+    position: relative;
+  }
+  .wow-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 12px;
+    position: relative;
+  }
+  .wow-divider span { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--accent)); }
+  .wow-divider span:last-child { transform: scaleX(-1); }
+  .wow-divider em { font-style: normal; font-size: 11px; color: var(--text3); letter-spacing: 2px; text-transform: uppercase; }
+
+  /* ── Layout ── */
+  .container { max-width: 960px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  /* ── Filters ── */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  .filter-btn {
+    font-size: 11px;
+    font-family: var(--sans);
+    padding: 5px 13px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    background: var(--bg2);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all .15s;
+    letter-spacing: .3px;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); color: #0d0f14; border-color: var(--accent); font-weight: 600; }
+
+  /* ── Class blocks ── */
+  .classes-grid { display: flex; flex-direction: column; gap: 10px; }
+  .class-block {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg2);
+    transition: border-color .2s;
+  }
+  .class-block:hover { border-color: var(--border2); }
+
+  .class-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s;
+  }
+  .class-header:hover { background: rgba(255,255,255,0.03); }
+
+  .class-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--font);
+    flex-shrink: 0;
+    letter-spacing: 0;
+  }
+  .class-name {
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font);
+    color: var(--text);
+    letter-spacing: .3px;
+  }
+  .class-role-tags { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
+  .role-tag { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; letter-spacing: .2px; }
+  .tag-dps    { background: rgba(226,75,74,.15);  color: #e24b4a; border: 1px solid rgba(226,75,74,.25); }
+  .tag-tank   { background: rgba(55,138,221,.15); color: #378add; border: 1px solid rgba(55,138,221,.25); }
+  .tag-heal   { background: rgba(29,158,117,.15); color: #1d9e75; border: 1px solid rgba(29,158,117,.25); }
+  .tag-support{ background: rgba(127,119,221,.15);color: #7f77dd; border: 1px solid rgba(127,119,221,.25); }
+
+  .chevron { font-size: 11px; color: var(--text3); transition: transform .2s; margin-left: 6px; flex-shrink: 0; }
+  .collapsed .chevron { transform: rotate(-90deg); }
+  .collapsed .specs-grid { display: none; }
+
+  /* ── Specs grid ── */
+  .specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    padding: 0 12px 14px;
+  }
+
+  .spec-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 13px;
+    background: var(--bg3);
+    transition: border-color .15s;
+  }
+  .spec-card:hover { border-color: var(--border2); }
+
+  .spec-name {
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    color: var(--text);
+    margin-bottom: 1px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .spec-role { font-size: 10px; color: var(--text3); margin-bottom: 8px; letter-spacing: .2px; }
+
+  .primary-stat {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    display: inline-block;
+    font-weight: 600;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+  }
+  .p-str  { background: rgba(216,90,48,.18);  color: #e8794a; border: 1px solid rgba(216,90,48,.3); }
+  .p-agi  { background: rgba(99,153,34,.18);  color: #7ac234; border: 1px solid rgba(99,153,34,.3); }
+  .p-int  { background: rgba(127,119,221,.18);color: #9f99ee; border: 1px solid rgba(127,119,221,.3); }
+
+  .stat-list { display: flex; flex-direction: column; gap: 4px; }
+  .stat-row  { display: flex; align-items: center; gap: 6px; }
+  .stat-rank {
+    width: 17px; height: 17px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; flex-shrink: 0;
+  }
+  .stat-name { font-size: 11px; color: var(--text2); min-width: 58px; }
+  .stat-bar  { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.07); overflow: hidden; }
+  .stat-fill { height: 100%; border-radius: 2px; transition: width .4s ease; }
+
+  .spec-note {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 7px;
+    line-height: 1.5;
+    border-top: 1px solid var(--border);
+    padding-top: 6px;
+  }
+
+  .new-badge {
+    font-size: 9px;
+    background: rgba(127,119,221,.25);
+    color: #9f99ee;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-family: var(--sans);
+    letter-spacing: .3px;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    justify-content: center;
+    margin-bottom: 18px;
+    padding: 10px 16px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── Footer ── */
+  .site-footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--text3);
+    border-top: 1px solid var(--border);
+    margin-top: 10px;
+  }
+  .site-footer a { color: var(--accent); text-decoration: none; }
+  .site-footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 480px) {
+    .specs-grid { grid-template-columns: 1fr 1fr; }
+    .site-header h1 { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>World of Warcraft: Midnight</h1>
+  <p>Complete Stat Priority Reference — All Classes &amp; Specs · Patch 12.0.1</p>
+  <div class="wow-divider">
+    <span></span>
+    <em>Wowhead · Icy Veins · Method</em>
+    <span></span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="legend" id="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#e24b4a"></div> Critical Strike</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef9f27"></div> Haste</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#1d9e75"></div> Mastery</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#378add"></div> Versatility</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d85a30"></div> Strength</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#639922"></div> Agility</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#7f77dd"></div> Intellect</div>
+  </div>
+
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">All specs</button>
+    <button class="filter-btn" data-filter="dps">DPS</button>
+    <button class="filter-btn" data-filter="tank">Tank</button>
+    <button class="filter-btn" data-filter="heal">Healer</button>
+    <button class="filter-btn" data-filter="support">Support</button>
+    <button class="filter-btn" data-filter="str">Strength</button>
+    <button class="filter-btn" data-filter="agi">Agility</button>
+    <button class="filter-btn" data-filter="int">Intellect</button>
+  </div>
+
+  <div class="classes-grid" id="classes"></div>
+
+</div>
+
+<footer class="site-footer">
+  Data sourced from <a href="https://www.wowhead.com" target="_blank">Wowhead</a>,
+  <a href="https://www.icy-veins.com" target="_blank">Icy Veins</a> &amp;
+  <a href="https://www.method.gg" target="_blank">Method</a> · Patch 12.0.1 · World of Warcraft: Midnight
+</footer>
+
+<script>
+const STAT_COLORS = {
+  "Critical Strike": "#e24b4a",
+  "Haste":           "#ef9f27",
+  "Mastery":         "#1d9e75",
+  "Versatility":     "#378add",
+  "Strength":        "#d85a30",
+  "Agility":         "#639922",
+  "Intellect":       "#7f77dd"
+};
+
+const RANK_COLORS = ["#d85a30","#ef9f27","#1d9e75","#378add","#7f77dd"];
+
+const classes = [
+  {
+    name:"Death Knight", icon:"DK", color:"#C41E3A", iconBg:"#3d0a10",
+    specs:[
+      { name:"Blood",   role:"Tank",  primary:"Strength", roles:["tank"], tags:["tank"],
+        stats:["Strength","Haste","Critical Strike","Versatility","Mastery"],
+        note:"Deathbringer: Crit=Vers=Mastery after Haste · San'layn: Haste priority" },
+      { name:"Frost",   role:"DPS",   primary:"Strength", roles:["dps"],  tags:["dps"],
+        stats:["Strength","Mastery","Critical Strike","Haste","Versatility"] },
+      { name:"Unholy",  role:"DPS",   primary:"Strength", roles:["dps"],  tags:["dps"],
+        stats:["Strength","Mastery","Critical Strike","Haste","Versatility"] }
+    ]
+  },
+  {
+    name:"Demon Hunter", icon:"DH", color:"#A330C9", iconBg:"#2e0a3d",
+    specs:[
+      { name:"Havoc",    role:"DPS",  primary:"Agility", roles:["dps"],  tags:["dps"],
+        stats:["Agility","Critical Strike","Mastery","Haste","Versatility"] },
+      { name:"Vengeance",role:"Tank", primary:"Agility", roles:["tank"], tags:["tank"],
+        stats:["Agility","Haste","Versatility","Critical Strike","Mastery"] },
+      { name:"Devourer", role:"DPS",  primary:"Intellect",roles:["dps"], tags:["dps"], newSpec:true,
+        stats:["Intellect","Mastery","Critical Strike","Haste","Versatility"] }
+    ]
+  },
+  {
+    name:"Druid", icon:"Dr", color:"#FF7C0A", iconBg:"#3d1e00",
+    specs:[
+      { name:"Balance",     role:"DPS",    primary:"Intellect", roles:["dps"],  tags:["dps"],
+        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"] },
+      { name:"Feral",       role:"DPS",    primary:"Agility",   roles:["dps"],  tags:["dps"],
+        stats:["Agility","Mastery","Haste","Critical Strike","Versatility"] },
+      { name:"Guardian",    role:"Tank",   primary:"Agility",   roles:["tank"], tags:["tank"],
+        stats:["Agility","Haste","Versatility","Critical Strike","Mastery"] },
+      { name:"Restoration", role:"Healer", primary:"Intellect", roles:["heal"], tags:["heal"],
+        stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"] }
+    ]
+  },
+  {
+    name:"Evoker", icon:"Ev", color:"#33937F", iconBg:"#0a2e29",
+    specs:[
+      { name:"Devastation",  role:"DPS",     primary:"Intellect", roles:["dps"],     tags:["dps"],
+        stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"] },
+      { name:"Preservation", role:"Healer",  primary:"Intellect", roles:["heal"],    tags:["heal"],
+        stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"] },
+      { name:"Augmentation", role:"Support", primary:"Intellect", roles:["support"], tags:["support"],
+        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"],
+        note:"Haste and Mastery are near-equal at #2" }
+    ]
+  },
+  {
+    name:"Hunter", icon:"Hu", color:"#AAD372", iconBg:"#1a2e0a",
+    specs:[
+      { name:"Beast Mastery",  role:"DPS", primary:"Agility", roles:["dps"], tags:["dps"],
+        stats:["Agility","Critical Strike","Haste","Mastery","Versatility"] },
+      { name:"Marksmanship",   role:"DPS", primary:"Agility", roles:["dps"], tags:["dps"],
+        stats:["Agility","Critical Strike","Mastery","Haste","Versatility"] },
+      { name:"Survival",       role:"DPS", primary:"Agility", roles:["dps"], tags:["dps"],
+        stats:["Agility","Mastery","Haste","Critical Strike","Versatility"] }
+    ]
+  },
+  {
+    name:"Mage", icon:"Ma", color:"#3FC7EB", iconBg:"#082233",
+    specs:[
+      { name:"Arcane", role:"DPS", primary:"Intellect", roles:["dps"], tags:["dps"],
+        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"] },
+      { name:"Fire",   role:"DPS", primary:"Intellect", roles:["dps"], tags:["dps"],
+        stats:["Intellect","Critical Strike","Mastery","Haste","Versatility"] },
+      { name:"Frost",  role:"DPS", primary:"Intellect", roles:["dps"], tags:["dps"],
+        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"] }
+    ]
+  },
+  {
+    name:"Monk", icon:"Mo", color:"#00FF98", iconBg:"#003320",
+    specs:[
+      { name:"Brewmaster",  role:"Tank",   primary:"Agility",   roles:["tank"], tags:["tank"],
+        stats:["Agility","Haste","Versatility","Critical Strike","Mastery"] },
+      { name:"Mistweaver",  role:"Healer", primary:"Intellect", roles:["heal"], tags:["heal"],
+        stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"] },
+      { name:"Windwalker",  role:"DPS",    primary:"Agility",   roles:["dps"],  tags:["dps"],
+        stats:["Agility","Versatility","Critical Strike","Haste","Mastery"] }
+    ]
+  },
+  {
+    name:"Paladin", icon:"Pa", color:"#F48CBA", iconBg:"#3d1a2e",
+    specs:[
+      { name:"Holy",       role:"Healer", primary:"Intellect", roles:["heal"], tags:["heal"],
+        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"] },
+      { name:"Protection", role:"Tank",   primary:"Strength",  roles:["tank"], tags:["tank"],
+        stats:["Strength","Haste","Critical Strike","Versatility","Mastery"] },
+      { name:"Retribution",role:"DPS",    primary:"Strength",  roles:["dps"],  tags:["dps"],
+        stats:["Strength","Mastery","Critical Strike","Haste","Versatility"] }
+    ]
+  },
+  {
+    name:"Priest", icon:"Pr", color:"#FFFFFF", iconBg:"#222222",
+    specs:[
+      { name:"Discipline", role:"Healer", primary:"Intellect", roles:["heal"], tags:["heal"],
+        stats:["Intellect","Critical Strike","Haste","Mastery","Versatility"] },
+      { name:"Holy",       role:"Healer", primary:"Intellect", roles:["heal"], tags:["heal"],
+        stats:["Intellect","Critical Strike","Mastery","Versatility","Haste"],
+        note:"Raid priority · Haste drops to #5" },
+      { name:"Shadow",     role:"DPS",    primary:"Intellect", roles:["dps"],  tags:["dps"],
+        stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"] }
+    ]
+  },
+  {
+    name:"Rogue", icon:"Ro", color:"#FFF468", iconBg:"#2e2b00",
+    specs:[
+      { name:"Assassination", role:"DPS", primary:"Agility", roles:["dps"], tags:["dps"],
+        stats:["Agility","Mastery","Critical Strike","Haste","Versatility"] },
+      { name:"Outlaw",        role:"DPS", primary:"Agility", roles:["dps"], tags:["dps"],
+        stats:["Agility","Versatility","Critical Strike","Haste","Mastery"] },
+      { name:"Subtlety",      role:"DPS", primary:"Agility", roles:["dps"], tags:["dps"],
+        stats:["Agility","Mastery","Critical Strike","Haste","Versatility"] }
+    ]
+  },
+  {
+    name:"Shaman", icon:"Sh", color:"#0070DD", iconBg:"#001a3d",
+    specs:[
+      { name:"Elemental",   role:"DPS",    primary:"Intellect", roles:["dps"],  tags:["dps"],
+        stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"] },
+      { name:"Enhancement", role:"DPS",    primary:"Agility",   roles:["dps"],  tags:["dps"],
+        stats:["Agility","Haste","Mastery","Critical Strike","Versatility"] },
+      { name:"Restoration", role:"Healer", primary:"Intellect", roles:["heal"], tags:["heal"],
+        stats:["Intellect","Haste","Mastery","Critical Strike","Versatility"] }
+    ]
+  },
+  {
+    name:"Warlock", icon:"Wl", color:"#8788EE", iconBg:"#0d0d33",
+    specs:[
+      { name:"Affliction",  role:"DPS", primary:"Intellect", roles:["dps"], tags:["dps"],
+        stats:["Intellect","Mastery","Haste","Critical Strike","Versatility"] },
+      { name:"Demonology",  role:"DPS", primary:"Intellect", roles:["dps"], tags:["dps"],
+        stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"] },
+      { name:"Destruction", role:"DPS", primary:"Intellect", roles:["dps"], tags:["dps"],
+        stats:["Intellect","Haste","Critical Strike","Mastery","Versatility"] }
+    ]
+  },
+  {
+    name:"Warrior", icon:"Wa", color:"#C69B3A", iconBg:"#2e2000",
+    specs:[
+      { name:"Arms",       role:"DPS",  primary:"Strength", roles:["dps"],  tags:["dps"],
+        stats:["Strength","Critical Strike","Haste","Mastery","Versatility"] },
+      { name:"Fury",       role:"DPS",  primary:"Strength", roles:["dps"],  tags:["dps"],
+        stats:["Strength","Haste","Critical Strike","Versatility","Mastery"] },
+      { name:"Protection", role:"Tank", primary:"Strength", roles:["tank"], tags:["tank"],
+        stats:["Strength","Haste","Critical Strike","Versatility","Mastery"] }
+    ]
+  }
+];
+
+const ROLE_LABELS = { dps:"DPS", tank:"Tank", heal:"Healer", support:"Support" };
+const ROLE_TAG_CLASS = { dps:"tag-dps", tank:"tag-tank", heal:"tag-heal", support:"tag-support" };
+const SHORT = { "Critical Strike":"Crit","Versatility":"Vers","Mastery":"Mastery","Haste":"Haste","Strength":"Str","Agility":"Agi","Intellect":"Int" };
+const PRIMARY_CLASS = { "Strength":"p-str","Agility":"p-agi","Intellect":"p-int" };
+
+function renderSpec(spec) {
+  const secondaries = spec.stats.slice(1);
+  const total = secondaries.length;
+  const pcts = secondaries.map((_, i) => Math.round(100 - (i * 68 / (total - 1))));
+  let html = `<div class="spec-card">
+    <div class="spec-name">${spec.name}${spec.newSpec ? `<span class="new-badge">NEW</span>` : ""}</div>
+    <div class="spec-role">${spec.role}</div>
+    <span class="primary-stat ${PRIMARY_CLASS[spec.primary] || ''}">${spec.primary}</span>
+    <div class="stat-list">`;
+  secondaries.forEach((s, i) => {
+    const rankNum = i + 1;
+    const rankBg = RANK_COLORS[i] || RANK_COLORS[4];
+    const col = STAT_COLORS[s] || "#888";
+    html += `<div class="stat-row">
+      <div class="stat-rank" style="background:${rankBg}22;color:${rankBg};border:1px solid ${rankBg}44">${rankNum}</div>
+      <span class="stat-name">${SHORT[s] || s}</span>
+      <div class="stat-bar"><div class="stat-fill" style="width:${pcts[i]}%;background:${col}"></div></div>
+    </div>`;
+  });
+  if (spec.note) {
+    html += `<div class="spec-note">${spec.note}</div>`;
+  }
+  html += `</div></div>`;
+  return html;
+}
+
+function renderClass(cls) {
+  const allRoles = [...new Set(cls.specs.flatMap(s => s.roles))];
+  const primaries = [...new Set(cls.specs.map(s => s.primary.toLowerCase().slice(0, 3)))];
+  const roleTagsHtml = allRoles.map(r => `<span class="role-tag ${ROLE_TAG_CLASS[r]}">${ROLE_LABELS[r]}</span>`).join("");
+  const specsHtml = cls.specs.map(renderSpec).join("");
+  return `<div class="class-block" data-roles='${JSON.stringify(allRoles)}' data-primaries='${JSON.stringify(primaries)}'>
+    <div class="class-header" onclick="toggleClass(this)">
+      <div class="class-icon" style="background:${cls.iconBg};color:${cls.color}">${cls.icon}</div>
+      <span class="class-name">${cls.name}</span>
+      <div class="class-role-tags">${roleTagsHtml}</div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="specs-grid">${specsHtml}</div>
+  </div>`;
+}
+
+document.getElementById("classes").innerHTML = classes.map(renderClass).join("");
+
+function toggleClass(header) {
+  header.closest(".class-block").classList.toggle("collapsed");
+}
+
+document.getElementById("filters").addEventListener("click", e => {
+  const btn = e.target.closest(".filter-btn");
+  if (!btn) return;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  const f = btn.dataset.filter;
+  document.querySelectorAll(".class-block").forEach(block => {
+    const roles = JSON.parse(block.dataset.roles || "[]");
+    const primaries = JSON.parse(block.dataset.primaries || "[]");
+    let show = false;
+    if (f === "all") show = true;
+    else if (["dps","tank","heal","support"].includes(f)) show = roles.includes(f);
+    else if (f === "str") show = primaries.includes("str");
+    else if (f === "agi") show = primaries.includes("agi");
+    else if (f === "int") show = primaries.includes("int");
+    block.style.display = show ? "" : "none";
+  });
+});
+</script>
+</body>
+</html>
